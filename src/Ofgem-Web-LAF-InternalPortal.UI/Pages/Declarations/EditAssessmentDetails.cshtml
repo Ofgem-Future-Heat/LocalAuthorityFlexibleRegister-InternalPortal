@@ -1,0 +1,106 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem.LAF.SharedLibrary.Enums
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model EditAssessmentDetailsModel
+@{
+    ViewData["Title"] = "Edit Assessment Details - LA Flex - Ofgem";
+}
+
+
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.PROFILES)" />
+
+<a asp-page="@LafPages.DeclarationDetail.ROUTE"
+   asp-page-handler="@LafPages.DeclarationDetail.METHOD_GET_WITH_ID_ACTION"
+   asp-route-declarationId="@Model.Declaration!.DeclarationId"
+   class="govuk-back-link">Back</a>
+
+<form method="POST">
+    <span class="govuk-caption-l">Edit assessment details for</span>
+    <h1 class="govuk-heading-l">@Model.Declaration?.Urn</h1>
+
+    <div class="govuk-form-group">
+
+        <fieldset class="govuk-fieldset">
+
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h1 class="govuk-fieldset__heading">
+                    Set declaration status
+                </h1>
+            </legend>
+
+            <div class="govuk-radios" data-module="govuk-radios">
+                
+                <!-- not allowed to manually select -->
+                <div class="govuk-radios__item" onclick="document.getElementById('@(Model.Status)').checked = true;">
+                    <input class="govuk-radios__input notSelectable" id="FailedCoreChecks" name="status" type="radio" value="@DeclarationStatus.FailedCoreChecks"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label notSelectable" for="FailedCoreChecks">
+                        Failed core checks
+                    </label>
+                </div>
+
+                <!-- not allowed to manually select -->
+                <div class="govuk-radios__item" onclick="document.getElementById('@(Model.Status)').checked = true;">
+                    <input class="govuk-radios__input notSelectable" id="FailedSoiChecks" name="status" type="radio" value="@DeclarationStatus.FailedSoiChecks"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label notSelectable" for="FailedSoiChecks">
+                        Failed SOI checks
+                    </label>
+                </div>
+
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="AwaitingSignOff" name="status" type="radio" value="@DeclarationStatus.AwaitingSignOff"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label" for="AwaitingSignOff">
+                        Awaiting Sign-Off
+                    </label>
+                </div>
+
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="OnHold" name="status" type="radio" value="@DeclarationStatus.OnHold"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label" for="OnHold">
+                        On Hold
+                    </label>
+                </div>
+
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="Accepted" name="status" type="radio" value="@DeclarationStatus.Accepted"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label" for="Accepted">
+                        Accepted
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="Not-Accepted" name="status" type="radio" value="@DeclarationStatus.Rejected"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label" for="Not-Accepted">
+                        Not Accepted
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    <input class="govuk-radios__input" id="Withdrawn" name="status" type="radio" value="@DeclarationStatus.Withdrawn"
+                           asp-for="Status">
+                    <label class="govuk-label govuk-radios__label" for="Withdrawn">
+                        Withdrawn
+                    </label>
+                </div>
+            </div>
+
+        </fieldset>
+
+    </div>
+
+    <div class="govuk-button-group  govuk-!-static-padding-top-5">
+        <button class="govuk-button" data-module="govuk-button"
+                type="submit"
+                asp-page-handler="@LafPages.EditAssessmentDetails.METHOD_SAVE_AND_CONTINUE">
+            Save assessment details
+        </button>
+        <a asp-page="@LafPages.DeclarationDetail.ROUTE"
+           asp-page-handler="@LafPages.DeclarationDetail.METHOD_GET_WITH_ID_ACTION"
+           asp-route-declarationId="@Model.Declaration!.DeclarationId" class="govuk-link">Cancel</a>
+    </div>
+</form>

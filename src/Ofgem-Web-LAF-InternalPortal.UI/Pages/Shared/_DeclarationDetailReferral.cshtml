@@ -1,0 +1,156 @@
+﻿@model (Ofgem_Web_LAF_InternalPortal.Models.Declaration Declaration, Ofgem_Web_LAF_InternalPortal.Models.DeclarationErrorFields DeclarationErrorFields, bool DisplayLinks)
+
+<!-- Referral details section  -->
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <table class="govuk-table" style=" table-layout: fixed; width: 100%;">
+            <caption class="govuk-table__caption govuk-table__caption--m">Referral details</caption>
+            <tbody class="govuk-table__body">
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="LARemitText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.ReferralMadeOutsideOfLAsRemit ?"govuk-form-group--error laf-table-error" :"")">Referral made outside of LA's remit</th>
+                    <td data-test-id="LARemitValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.ReferralMadeOutsideOfLAsRemit</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="ReferralRoutText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.Route ?"govuk-form-group--error laf-table-error" :"")">ECO4/GBIS Flex referral route</th>
+                    <td data-test-id="ReferralRoutValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.ECO4orGreatBritishInsulationSchemeFlexReferralRoute</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="Rout2ProxiesRoute3UmbrellaText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.Route2Proxies ?"govuk-form-group--error laf-table-error" :"")">Route 2 proxies</th>
+                    <td data-test-id="Rout2ProxiesRoute3UmbrellaValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.Route2Proxies</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="Rout2ProxiesText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.AdditionalRoute2Proxies ?"govuk-form-group--error laf-table-error" :"")">Additional route 2 proxies</th>
+                    <td data-test-id="Rout2ProxiesValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.AdditionalRoute2Proxies</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="Rout4ApplicationNumberText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.Route4ApplicationNumber ?"govuk-form-group--error laf-table-error" :"")">Route 4 application number</th>
+                    <td data-test-id="Rout4ApplicationNumberValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.Route4ApplicationNumber</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="LAAreaCodeText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.LAAreaCode ?"govuk-form-group--error laf-table-error" :"")">LA area code</th>
+                    <td data-test-id="LAAreaCodeValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.LAAreaCode</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="DOHouseholderEligibilityText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.DateOfHouseholderEligibility ?"govuk-form-group--error laf-table-error" :"")">Date of householder eligibility</th>
+                    <td data-test-id="DOHouseholderEligibilityValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.DateOfHouseholderEligibilityForView</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="LocalAuthorityText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.LocalAuthority ?"govuk-form-group--error laf-table-error" :"")">Local authority</th>
+                    <td data-test-id="LocalAuthorityValue" class="govuk-table__cell govuk-!-width-one-half">
+                        @Model.Declaration.LocalAuthority
+
+                        @if (Model is { DisplayLinks: true, Declaration.LAAreaCode: not null } &&
+                        Model.Declaration.LAAreaCode.Length == 9)
+                        {
+                            <a data-test-id="GoToAuthorityProfileLink"
+                               asp-page="@Extensions.LafPages.Profile.ROUTE"
+                               asp-page-handler="@Extensions.LafPages.Profile.METHOD_GET_BY_ONS"
+                               asp-route-onsCode="@Model.Declaration.LAAreaCode"
+                               style="float:right">Go to authority profile</a>
+                        }
+
+                    </td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="WasLocalAuthorityConsultedText" scope="row"
+                        class="govuk-table__header govuk-!-width-one-half @(Model.DeclarationErrorFields.LAWasConsultedPriorToInstallationCompletion ?"govuk-form-group--error laf-table-error" :"")">Was local authority consulted prior to installation?</th>
+                    <td data-test-id="WasLocalAuthorityConsultedValue" class="govuk-table__cell  govuk-!-width-one-half"> @Model.Declaration.LAWasConsultedPriorToInstallationCompletion </td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="SoIPublicationDateText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.DateOfStatementOfIntentPublication ?"govuk-form-group--error laf-table-error" :"")">SoI publication date</th>
+                    <td data-test-id="SoIPublicationDateValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.DateOfStatementOfIntentPublication</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="SoILinkText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.StatementOfIntentLink ?"govuk-form-group--error laf-table-error" :"")">SoI link</th>
+                    <td data-test-id="SoILinkValue" class="govuk-table__cell govuk-!-width-one-half" style="white-space: normal!important;">
+                        <a href="@Model.Declaration.StatementOfIntentLink" target="_blank" rel="noopener">@Model.Declaration.StatementOfIntentLink</a>
+                    </td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="PublishedForText" scope="row"
+                        class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.StatementOfIntentPublishedFor ?"govuk-form-group--error laf-table-error" :"")">Published for</th>
+                    <td data-test-id="PublishedForValue" class="govuk-table__cell govuk-!-width-one-half" style="white-space: normal!important;">
+                        @Model.Declaration.StatementOfIntentPublishedFor
+                    </td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="SoICategoryText" scope="row"
+                        class="govuk-table__header govuk-!-width-one-half">SoI category</th>
+                    <td data-test-id="SoICategoryValue" class="govuk-table__cell govuk-!-width-one-half">
+                        @{
+                            switch (Model.Declaration.SoiCategory)
+                            {
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiCategory.Incomplete:
+                                    <strong class="govuk-tag laflex-tag--soicategoryincomplete govuk-!-static-margin-bottom-1"> INCOMPLETE </strong>
+                                    break;
+
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiCategory.Complete:
+                                    <strong class="govuk-tag govuk govuk-!-static-margin-bottom-1"> COMPLETE </strong>
+                                    break;
+
+                                default:
+                                    <span></span>
+                                    break;
+                            }
+                        }
+                    </td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="SoIStatusText" scope="row" class="govuk-table__header  govuk-!-width-one-half">SoI status</th>
+                    <td class="govuk-table__cell govuk-!-width-one-half">
+                        @{
+                            switch (Model.Declaration.SoiStatus)
+                            {
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.FailedAssessment:
+                                    <strong class="govuk-tag laflex-tag--failedsoichecks govuk-!-static-margin-bottom-1"> Failed Assessment </strong>
+                                    break;
+
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.AwaitingSignOff:
+                                    <strong class="govuk-tag laflex-tag--awaitingsignoff govuk-!-static-margin-bottom-1"> Awaiting Sign Off </strong>
+                                    break;
+
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.PassedAssessment:
+                                    <strong class="govuk-tag laflex-tag--accepted govuk-!-static-margin-bottom-1"> Passed Assessment </strong>
+                                    break;
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.Withdrawn:
+                                    <strong class="govuk-tag laflex-tag--withdrawn govuk-!-static-margin-bottom-1"> WITHDRAWN </strong>
+                                    break;
+                                case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.ToBeAssessed:
+                                    <strong class="govuk-tag govuk-tag--blue govuk-!-static-margin-bottom-1"> To Be Assessed </strong>
+                                    break;
+
+                                default:
+                                    <span></span>
+                                    break;
+                            }
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

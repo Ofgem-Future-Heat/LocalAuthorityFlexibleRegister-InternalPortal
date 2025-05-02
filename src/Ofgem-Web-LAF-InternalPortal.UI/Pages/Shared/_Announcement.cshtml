@@ -1,0 +1,127 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model List<Models.AnnouncementLine>
+
+
+@foreach (var item in Model)
+{
+    <!--  row -->
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <p class="govuk-body govuk-!-font-weight-bold " style="word-wrap: break-word">@item.Announcement.Headline</p>
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+            <p>
+                @{
+                    if (item.Published)
+                    {
+                        // PUBLISHED
+                        <strong class="govuk-tag govuk-!-display-block govuk-!-text-align-right laflex-tag--published" style="float: right;"> Published </strong>
+                    }
+                    else
+                    {
+                        if (item.UnPublished)
+                        {
+                            // UNPUBLISHED
+                            <strong class="govuk-tag govuk-!-display-block govuk-!-text-align-right laflex-tag--unpublished" style="float: right;"> UnPublished </strong>
+                        }
+                        else
+                        {
+                            // SCHEDULED
+                            <strong class="govuk-tag govuk-!-display-block govuk-!-text-align-right laflex-tag--scheduled" style="float: right;"> Scheduled </strong>
+                        }
+                    }
+                }
+            </p>
+        </div>
+        <div class="govuk-grid-column-three-quarters">
+            <p class="govuk-body laf-wrap-text" style="word-wrap: break-word">@item.Announcement.Text</p>
+            <p class="govuk-body-s govuk-!-font-weight-bold">
+
+                @{
+                    if (item.Published)
+                    {
+                        // PUBLISHED
+                        <span>Published at: @LafLocalTimezone.ToLocalTime(item.Announcement.PublishedDate).ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_PUBLISHED).</span>
+                    }
+                    else
+                    {
+                        if (item.UnPublished)
+                        {
+                            // UNPUBLISHED
+                            <span>Published at: @(item.Announcement.PublishedDate.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_PUBLISHED))</span>
+                            <span> - Unpublished at: @(item.Announcement.UnPublishedDate.HasValue ?
+                (LafLocalTimezone.ToLocalTime((DateTime)item.Announcement.UnPublishedDate)).ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_PUBLISHED) : "")
+                            </span>
+                        }
+                        else
+                        {
+                            // SCHEDULED
+                            <span>Scheduled for: @LafLocalTimezone.ToLocalTime(item.Announcement.PublishedDate).ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_PUBLISHED).</span>
+                            @if (item.Announcement.UnPublishedDate.HasValue)
+                            {
+                                <span> - Unpublish at: @((LafLocalTimezone.ToLocalTime((DateTime)item.Announcement.UnPublishedDate)).ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_PUBLISHED))</span>
+                            }
+
+                        }
+                    }
+                }
+
+            </p>
+
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+            <p class="govuk-!-font-size-16 govuk-!-text-align-right">
+
+                @{
+                    if (item.Published)
+                    {
+                        // PUBLISHED
+                        <a asp-page="@LafPages.AnnouncementEdit.ROUTE"
+                           asp-page-handler="@LafPages.AnnouncementEdit.METHOD_GET_WITH_ID"
+                           asp-route-id="@item.Announcement.AnnouncementId">
+                            Edit
+                        </a>
+
+                        <span>&nbsp;|&nbsp;</span>
+
+                        <button type="submit" class="govuk-link buttonAsLink" data-test-id="UnPublishAnnouncement"
+                                asp-page-handler="@LafPages.Admin.METHOD_ANNOUNCEMENT_UNPUBLISH"
+                                asp-route-id="@item.Announcement.AnnouncementId"
+                                onclick="return confirm('Are you sure you want to UNPUBLISH this announcement?')">
+                            Unpublish
+                        </button>
+                    }
+                    else
+                    {
+                        if (item.UnPublished)
+                        {
+                            // UNPUBLISHED
+                        }
+                        else
+                        {
+                            // SCHEDULED
+                            <a asp-page="@LafPages.AnnouncementEdit.ROUTE"
+                               asp-page-handler="@LafPages.AnnouncementEdit.METHOD_GET_WITH_ID"
+                               asp-route-id="@item.Announcement.AnnouncementId">
+                                Edit
+                            </a>
+
+                            <span>&nbsp;|&nbsp;</span>
+
+                            <button type="submit" class="govuk-link buttonAsLink" data-test-id="UnPublishAnnouncement"
+                                    asp-page-handler="@LafPages.Admin.METHOD_ANNOUNCEMENT_DELETE"
+                                    asp-route-id="@item.Announcement.AnnouncementId"
+                                    onclick="return confirm('Are you sure you want to DELETE this announcement?')">
+                                Delete
+                            </button>
+                        }
+
+                    }
+                }
+
+            </p>
+        </div>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+}

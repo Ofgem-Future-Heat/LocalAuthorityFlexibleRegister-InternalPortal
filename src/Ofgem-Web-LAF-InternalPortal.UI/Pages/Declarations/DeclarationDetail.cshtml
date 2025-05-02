@@ -1,0 +1,189 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model DeclarationDetailModel
+
+@{
+    ViewData["Title"] = "Declaration Detail - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+
+<a data-test-id="BackButton" asp-page="@LafPages.Dashboard.ROUTE" class="govuk-back-link">Back</a>
+
+@if (Model.Declaration != null)
+{
+
+    <form method="POST">
+        
+        <!-- Error summary  -->
+        @if (Model.Declaration.DeclarationErrors is { Count: > 0 })
+        {
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+                <div role="alert">
+                    <h2 data-test-id="CoreCheckText" class="govuk-error-summary__title">
+                        The following fields have not passed the core checks:
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul data-test-id="CoreCheckValue" class="govuk-list govuk-error-summary__list laflex-error-list">
+
+                            @foreach (var item in Model.Declaration.DeclarationErrors!)
+                            {
+                                <li>
+                                    @item.Message
+                                </li>
+                            }
+
+                        </ul>
+                        
+                        <br/>
+
+                        @if (Model.Permissions.CanFixErrors && Model.DeclarationErrorFields.CanBeFixed)
+                        {
+                            <div class="govuk-button-group">
+                                <a data-test-id="GovukEditAssessmentDetailButton"
+                                   class="govuk-button " data-module="govuk-button"
+                                   asp-page="@LafPages.DeclarationDetailEdit.ROUTE"
+                                   asp-page-handler="@LafPages.DeclarationDetailEdit.METHOD_GET_WITH_ID_ACTION"
+                                   asp-route-declarationId="@Model.Declaration.DeclarationId">
+                                    Fix errors
+                                </a>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        }
+
+        <span class="govuk-caption-l" data-test-id="DeclarationDetailText">Declaration details for</span>
+        <h1 class="govuk-heading-l" data-test-id="DeclarationUrnValue">@Model.Declaration?.Urn</h1>
+
+        @await Html.PartialAsync("_DeclarationDetail", Model)
+
+        <div class="govuk-button-group">
+            @if (Model.Permissions.CanEditAssessment)
+            {
+                <a data-test-id="GovukEditAssessmentDetailButton"
+                   class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                   asp-page="@LafPages.EditAssessmentDetails.ROUTE"
+                   asp-page-handler="@LafPages.EditAssessmentDetails.METHOD_GET_WITH_ID_ACTION"
+                   asp-route-declarationId="@Model.Declaration!.DeclarationId">
+                    Edit assessment details
+                </a>
+            }
+        </div>
+
+        <!-- Submission notes  -->
+        <div class="govuk-form-group @(Model.HasSubmissionNoteError ? "govuk-form-group--error" : "") ">
+        <h2 class="govuk-heading-m">Submission notes</h2>
+            @if (Model.HasSubmissionNoteError)
+            {
+                <p id="submission-note-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.SubmissionNoteError
+                </p>
+            }
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="SubmissionNote">
+                Add comments to help the assessment. Comments are for internal eyes only.
+            </label>
+            <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="200">
+                <textarea class="govuk-textarea govuk-js-character-count govuk-!-width-two-thirds" id="SubmissionNote" name="SubmissionNote" rows="5" asp-for="SubmissionNote"></textarea>
+                <div id="SubmissionNote-info" class="govuk-hint govuk-character-count__message">
+                    You can enter up to 200 characters
+            </div>
+            </div>
+        </div>
+        </div>
+
+        @if (Model.Permissions.CanSaveNote)
+        {
+            <button data-test-id="GovukSaveNoteButton" class="govuk-button" data-module="govuk-button" type="submit" data-enabled-when-contains-text="SubmissionNote"
+                    asp-page="@LafPages.DeclarationDetail.ROUTE"
+                    asp-page-handler="@LafPages.DeclarationDetail.METHOD_CREATE_DECLARATION_NOTE"
+                    asp-route-declarationId="@Model.Declaration!.DeclarationId">
+                Save note
+            </button>
+        }
+
+        @if (Model.Declaration is { DeclarationNotes: not null })
+        {
+            @if (Model.Declaration.DeclarationNotes.Count > 0)
+            {
+                <div class="govuk-details__text no-border-left govuk-!-padding-left-0">
+                    <!-- show the first note in the list-->
+                    <div class="laflex-notes-details">
+                        <div class="laflex-notes-date-name govuk-!-static-padding-bottom-2">
+                            <p class="govuk-!-display-inline govuk-body govuk-!-font-weight-bold ">@(Model.Declaration.DeclarationNotes[0].CreatedDate?.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_MONTH_FORMAT, CultureInfo.CreateSpecificCulture("en-GB")))</p>
+                            <p class="govuk-!-text-align-right govuk-!-display-inline govuk-body govuk-!-font-weight-bold" style="float: right;">Updated by: @Model.Declaration.DeclarationNotes[0].CreatedByName</p>
+                        </div>
+                        <p data-test-id="SubmissionNotesText" class="govuk-body laf-wrap-text">@Model.Declaration.DeclarationNotes[0].Text</p>
+                        <p data-test-id="SubmissionNotesDeleteLink" class="govuk-!-font-size-14 govuk-!-static-margin-bottom-0">
+
+                            @if (Model.Permissions.CanDeleteNote)
+                            {
+                                <a type="submit"
+                                   asp-page="@LafPages.DeclarationDetail.ROUTE"
+                                   asp-page-handler="@LafPages.DeclarationDetail.METHOD_DELETE_DECLARATION_NOTE"
+                                   asp-route-declarationId="@Model.Declaration.DeclarationNotes[0].DeclarationId"
+                                   asp-route-declarationNoteId="@Model.Declaration.DeclarationNotes[0].DeclarationNoteId"
+                                   onclick="return confirm('Are you sure you want to delete this note')">Delete</a>
+                            }
+
+                        </p>
+                    </div>
+                </div>
+            }
+
+
+            @if (Model.Declaration.DeclarationNotes.Count > 1)
+            {
+                ViewBag.CanDeleteNote = Model.Permissions.CanDeleteNote;
+                ViewBag.Declaration = Model.Declaration;
+                ViewBag.IncludeDeleteButton = true;
+                @await Html.PartialAsync("_ShowNoteHistory", Model.Declaration)
+            }
+        }
+
+        @if (Model.Declaration is { SupersededDeclarations.Count: > 0 })
+        {
+            <h2 id="supersededHeading" class="govuk-heading-m">Superseded versions</h2>
+
+            @for (var count = 0; count < Model.Declaration!.SupersededDeclarations.Count; count++)
+            {
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+                        <table class="govuk-table" aria-describedby="supersededHeading">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                                <tr class="govuk-table__row govuk-summary-list__row--no-border">
+                                    <td class="govuk-table__header govuk-!-width-two-thirds">
+                                        <a asp-page="@LafPages.SupersededDetails.ROUTE"
+                                           asp-page-handler="@LafPages.SupersededDetails.METHOD_GET_WITH_URN_AND_VERSION"
+                                           asp-route-ParentDeclarationId="@Model.Declaration.DeclarationId"
+                                           asp-route-urn="@Model.Declaration.SupersededDeclarations[count].Urn"
+                                           asp-route-version="@Model.Declaration.SupersededDeclarations[count].Version">
+                                            @Model.Declaration.SupersededDeclarations[count].Urn &nbsp;(@Model.Declaration.SupersededDeclarations[count].Version)
+                                        </a>
+                                    </td>
+                                    <td data-test-id="SupersededCreatedDate" class="govuk-table__cell">Superseded on @Model.Declaration?.SupersededDeclarations[count].CreatedDate?.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATE_ONLY_FORMAT)</td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            <div class="govuk-table__cell no-border-bottom">&nbsp;</div>
+        }
+
+    </form>
+}

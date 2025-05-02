@@ -1,0 +1,238 @@
+﻿@page
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.InitialAssessmentChecklist
+
+@{
+    ViewData["Title"] = "Initial assessment checklist - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+@if (Model.ShowForm)
+{
+    <a asp-page="@LafPages.SoiV2.Edit.ROUTE"
+       asp-page-handler="@LafPages.SoiV2.Edit.METHOD_GET_BY_ONS"
+       asp-route-onsCode="@Model.OnsCode"
+       asp-route-version="@Model.SoiVersion"
+       asp-route-publishedDate="@Model.DatePublished.ToString("yyyyMMdd")"
+       data-test-id="BackButton" class="govuk-back-link">Back</a>
+}
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+@if (Model.ShowForm)
+{
+    <main class="govuk-main-wrapper " id="edit-soi-main-content" role="main">
+
+        <form method="POST">
+            <input asp-for="OnsCode" type="hidden" />
+            <input asp-for="LocalAuthorityId" type="hidden" />
+            <input asp-for="StatementOfIntentId" type="hidden" />
+
+            <h1 class="govuk-heading-l">Initial assessment checklist for @Model.LocalAuthorityName Statement of Intent (SOI)</h1>
+
+            <div class="govuk-form-group @(Model.LocalAuthorityNamedHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend--m">
+                        Does the Statement of Intent name the relevant local authority?
+                    </legend>
+
+                    @if (Model.LocalAuthorityNamedHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DisplayMessage)
+                        </div>
+                    }
+
+                    <div class="govuk-radios " data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsLocalAuthorityNamedYes" name="IsLocalAuthorityNamed" type="radio"
+                                   value="true"
+                                   asp-for="IsLocalAuthorityNamed">
+                            <label class="govuk-label govuk-radios__label" for="IsLocalAuthorityNamedYes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsLocalAuthorityNamedNo" name="IsLocalAuthorityNamed" type="radio"
+                                   value="false"
+                                   asp-for="IsLocalAuthorityNamed">
+                            <label class="govuk-label govuk-radios__label" for="IsLocalAuthorityNamedNo">
+                                No (will result in failed assessment)
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="govuk-form-group @(Model.DelegatedAuthorityNamedHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend--m">
+                        Does the statement of intent name a delegate authority?
+                    </legend>
+
+                    @if (Model.DelegatedAuthorityNamedHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DisplayMessage)
+                        </div>
+                    }
+
+                    <div class="govuk-radios " data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsDelegatedAuthorityNamedYes" name="IsDelegatedAuthorityNamed" type="radio"
+                                   value="true"
+                                   asp-for="IsDelegatedAuthorityNamed">
+                            <label class="govuk-label govuk-radios__label" for="IsDelegatedAuthorityNamedYes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsDelegatedAuthorityNamedNo" name="IsDelegatedAuthorityNamed" type="radio"
+                                   value="false"
+                                   asp-for="IsDelegatedAuthorityNamed">
+                            <label class="govuk-label govuk-radios__label" for="IsDelegatedAuthorityNamedNo">
+                                No
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="govuk-form-group @(Model.SoiSameAsWebsiteHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend--m">
+                        Is this same Statement of Intent published on the local authority website?
+                    </legend>
+
+                    @if (Model.SoiSameAsWebsiteHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DisplayMessage)
+                        </div>
+                    }
+
+                    <div class="govuk-radios" data-module="govuk-radios">
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsSoiSameAsWebsiteYes" name="IsSoiSameAsWebsite" type="radio"
+                                   value="true"
+                                   asp-for="IsSoiSameAsWebsite">
+                            <label class="govuk-label govuk-radios__label" for="IsSoiSameAsWebsiteYes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsSoiSameAsWebsiteNo" name="IsSoiSameAsWebsite" type="radio"
+                                   value="false"
+                                   asp-for="IsSoiSameAsWebsite">
+                            <label class="govuk-label govuk-radios__label" for="IsSoiSameAsWebsiteNo">
+                                No (will result in failed assessment)
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="govuk-form-group @(Model.MostRecentTemplateHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend--m">
+                        Has the local authority used the most recently available Statement of Intent templates published on the Ofgem website?
+                    </legend>
+
+                    @if (Model.MostRecentTemplateHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DisplayMessage)
+                        </div>
+                    }
+
+                    <div class="govuk-radios " data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="HasMostRecentTemplateYes" name="HasMostRecentTemplate" type="radio"
+                                   value="true"
+                                   asp-for="HasMostRecentTemplate">
+                            <label class="govuk-label govuk-radios__label" for="HasMostRecentTemplateYes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="HasMostRecentTemplateNo" name="HasMostRecentTemplate" type="radio"
+                                   value="false"
+                                   asp-for="HasMostRecentTemplate">
+                            <label class="govuk-label govuk-radios__label" for="HasMostRecentTemplateNo">
+                                No
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="govuk-form-group @(Model.PreviousVersionStatusHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend--m">
+                        If there are previous versions of the Statement of intent, are they clearly displayed as withdrawn/redacted?
+                    </legend>
+
+                    @if (Model.PreviousVersionStatusHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DisplayMessage)
+                        </div>
+                    }
+
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsPreviousVersionStatusClearYes" name="IsPreviousVersionStatusClear" type="radio"
+                                   value="true"
+                                   asp-for="IsPreviousVersionStatusClear">
+                            <label class="govuk-label govuk-radios__label" for="IsPreviousVersionStatusClearYes">
+                                Yes, or there are no previous versions for this Statement of intent
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsPreviousVersionStatusClearNo" name="IsPreviousVersionStatusClear" type="radio"
+                                   value="false"
+                                   asp-for="IsPreviousVersionStatusClear">
+                            <label class="govuk-label govuk-radios__label" for="IsPreviousVersionStatusClearNo">
+                                No
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="govuk-button-group govuk-!-margin-top-8">
+                @if (Model.Permissions.CanContinue)
+                {
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            asp-page="@LafPages.SoiV2.InitialAssessmentChecklist.ROUTE"
+                            asp-page-handler="@LafPages.SoiV2.InitialAssessmentChecklist.METHOD_SAVE_CONTINUE"
+                            asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                        Continue
+                    </button>
+                }
+
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.InitialAssessmentChecklist.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.InitialAssessmentChecklist.METHOD_SAVE_EXIT"
+                        asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                    Save and exit
+                </button>
+            </div>
+        </form>
+    </main>
+}

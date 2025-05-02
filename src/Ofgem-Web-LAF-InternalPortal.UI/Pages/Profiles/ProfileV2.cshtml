@@ -1,0 +1,108 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model ProfileV2
+
+@{
+    ViewData["Title"] = "Local authority profile - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.PROFILES)" />
+
+<form method="POST">
+    <a class="govuk-back-link"
+       asp-page="@LafPages.Profiles.ROUTE">
+        Back
+    </a>
+
+    @if (Model.ShowNotification)
+    {
+        <div id="uploadNotificationArea" class="govuk-notification-banner ofegm-noftification-banner" role="region"
+             aria-labelledby="govuk-notification-banner-title"
+             data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Information
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+
+                @if (Model.HasDisplayMessage)
+                {
+                    <p class="govuk-body">@Model.DisplayMessage</p>
+                }
+
+            </div>
+        </div>
+    }
+
+    <main class="govuk-main-wrapper " id="profile-main-content" role="main">
+
+        <span class="govuk-caption-l">Local authority details for</span>
+        <h1 class="govuk-heading-l">@Model.Name</h1>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m">Local authority details</caption>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header  govuk-!-width-one-half">Authority name</th>
+                            <td class="govuk-table__cell">@Model.Name</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header  govuk-!-width-one-half">ONS code</th>
+                            <td class="govuk-table__cell">@Model.OnsCode</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header govuk-!-width-one-half">Email address</th>
+                            <td class="govuk-table__cell"><a href="#">@Model.Email</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (Model.Permissions.CanEditProfile)
+        {
+            <a class="govuk-button govuk-button--secondary "
+               data-module="govuk-button"
+               asp-page="@LafPages.EditProfile.ROUTE"
+               asp-page-handler="@LafPages.EditProfile.METHOD_GET_BY_ONS"
+               asp-route-onsCode="@Model.OnsCode">
+                Edit local authority details
+            </a>
+        }
+
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+        <div class="govuk-button-group ">
+
+
+            @if (Model.Permissions.CanAddSoi)
+            {
+                <a data-test-id="addNewSoi"
+                   class="govuk-button"
+                   data-module="govuk-button"
+                   asp-page="@LafPages.SoiV2.Add.ROUTE"
+                   asp-route-onsCode="@Model.OnsCode">
+                    Add new SOI
+                </a>
+            }
+
+            <!-- Only show view link if there are existing soi -->
+            @if (Model.StatementOfIntents != null && Model.StatementOfIntents.Any())
+            {
+                <a data-test-id="viewLatestSoi" 
+                   class="govuk-link"
+                   asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+                   asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+                   asp-route-statementOfIntentId="@Model.StatementOfIntents[0].StatementOfIntentId">
+                    View the latest statement of intent version
+                </a>
+            }
+        </div>
+
+    </main>
+</form>

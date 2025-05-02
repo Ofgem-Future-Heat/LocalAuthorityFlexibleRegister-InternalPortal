@@ -1,0 +1,371 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@using Ofgem.LAF.SharedLibrary.Enums
+@model SoiDetails
+@{
+    ViewData["Title"] = "Statement of Intent dashboard - LA Flex - Ofgem";
+
+    Layout = "_Layout_for_dashboard";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+<a class="govuk-back-link"
+   asp-page="@LafPages.SoiV2.Dashboard.ROUTE">
+    Back
+</a>
+
+@if (Model.StatementOfIntentModel is not null)
+{
+
+    <form>
+        <br>
+        <span class="govuk-caption-l">Statement of Intent (SOI) details for</span>
+        <h1 class="govuk-heading-l"> @(Model.StatementOfIntentModel?.LocalAuthority) - @(Model.StatementOfIntentModel?.VersionNumber)</h1>
+
+        <a data-test-id="x"
+           class="govuk-button"
+           data-module="govuk-button"
+           asp-page="@LafPages.SoiV2.Add.ROUTE"
+           asp-route-onsCode="@Model.StatementOfIntentModel?.BaseLaOnsCode">
+            Add new SOI
+        </a>
+
+
+        <!-- Statement of Intent details -->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Statement of Intent details
+                </h2>
+
+            </div>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Date added
+                        </dt>
+                        <dt>
+                            @Model.StatementOfIntentModel?.DisplayCreatedDate
+                        </dt>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            SOI status
+                        </dt>
+
+                        <dt>
+                            @if (Model.StatementOfIntentModel is not null)
+                            {
+                                @await Html.PartialAsync("_StatementOfIntentStatus", Model.StatementOfIntentModel.SoiStatus)
+                            }
+                        </dt>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Link to SOI
+                        </dt>
+
+                        <dt>
+                            <a href="@Model.StatementOfIntentModel?.SoiLink" target="_blank" class="govuk-link">@Model.StatementOfIntentModel?.SoiLink</a>
+                        </dt>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Submitting for other local authority
+                        </dt>
+
+                        <dt>
+                            <span>@((bool)Model.StatementOfIntentModel?.CanSubmit ? "Yes" : "No")</span>
+                        </dt>
+                    </div>
+
+                    @if ((bool)Model.StatementOfIntentModel?.CanSubmit)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Local authority name
+                            </dt>
+
+                            <dt>
+                                <span>@(Model.StatementOfIntentModel?.DelegatedLocalAuthorityList)</span>
+                            </dt>
+                            <dd class="govuk-summary-list__actions">
+
+                                @if (Model.StatementOfIntentModel != null &&
+                               Model.Permissions.CanAssess &&
+                               Model.StatementOfIntentModel.SoiStatus != SoiStatusV2.Withdrawn)
+                                {
+                                    <a class="govuk-link" asp-page="@LafPages.SoiV2.EditDesignatedLas.ROUTE"
+                                       asp-route-onsCode="@Model.StatementOfIntentModel?.BaseLaOnsCode"
+                                       asp-route-version="@Model.StatementOfIntentModel?.VersionNumber"
+                                       asp-route-publishedDate="@(((DateTime)Model.StatementOfIntentModel?.DateAdded).ToString("yyyyMMdd"))">Add<span class="govuk-visually-hidden">Add Local Authority</span></a>
+                                }
+
+                            </dd>
+                        </div>
+                    }
+
+                </dl>
+            </div>
+        </div>
+
+        <!-- Internal assessment summary -->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Internal assessment summary
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Initial checklist
+                        </dt>
+
+                        <dt>
+                            @if (Model.StatementOfIntentModel is { IsInitialCheckListComplete: true })
+                            {
+                                <strong class="govuk-tag">
+                                    ASSESSMENT COMPLETED
+                                </strong>
+                            }
+                            else
+                            {
+                                <strong class="govuk-tag govuk-tag--blue">
+                                    TO BE ASSESSED
+                                </strong>
+                            }
+                        </dt>
+
+
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Scheme details checklist
+                        </dt>
+
+                        <dt>
+                            @if (Model.StatementOfIntentModel is { IsSchemeDetailComplete: true })
+                            {
+                                <strong class="govuk-tag">
+                                    ASSESSMENT COMPLETED
+                                </strong>
+                            }
+                            else
+                            {
+                                <strong class="govuk-tag govuk-tag--blue">
+                                    TO BE ASSESSED
+                                </strong>
+                            }
+                        </dt>
+
+
+                    </div>
+                    @if (Model.StatementOfIntentModel?.IsProxy5PartOfRoute2 == null || (bool)Model.StatementOfIntentModel?.IsProxy5PartOfRoute2)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Eligibility for Route 2 Proxy 5
+                            </dt>
+
+                            <dt>
+                                @if (Model.StatementOfIntentModel is { IsEligibilityForRoute2Proxy5Complete: true })
+                                {
+                                    <strong class="govuk-tag">
+                                        ASSESSMENT COMPLETED
+                                    </strong>
+                                }
+                                else
+                                {
+                                    <strong class="govuk-tag govuk-tag--blue">
+                                        TO BE ASSESSED
+                                    </strong>
+                                }
+                            </dt>
+
+
+                        </div>
+                    }
+
+                </dl>
+            </div>
+        </div>
+
+        <!-- Version notes -->
+        @if (Model.StatementOfIntentModel?.AssessmentNotes is not null &&
+       Model.StatementOfIntentModel?.AssessmentNotes.Count > 0)
+        {
+            <details class="govuk-details govuk-!-padding-bottom-2" data-module="govuk-details">
+
+                <summary class="govuk-details__summary">
+                    <span class="govuk-details__summary-text">
+                        Version notes
+                    </span>
+                </summary>
+
+                @foreach (var note in Model.StatementOfIntentModel.AssessmentNotes)
+                {
+                    <div class="govuk-details__text no-border-left govuk-!-padding-left-0">
+                        <div class="laflex-notes-details">
+                            <div class="laflex-notes-date-name govuk-!-static-padding-bottom-2">
+                                <p class="govuk-!-display-inline govuk-body govuk-!-font-weight-bold  ">@note.Date</p>
+                                <p class="govuk-!-text-align-right govuk-!-display-inline govuk-body govuk-!-font-weight-bold " style="float: right;">Updated by: @note.CreatedBy</p>
+                            </div>
+                            <p class="govuk-body">
+                                @note.Text
+                            </p>
+                        </div>
+                    </div>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                }
+
+            </details>
+        }
+
+
+        <div class="govuk-button-group ">
+
+            @if (Model.CanAssessSoi)
+            {
+                @if (Model.CanContinueSchemeDetail)
+                {
+                    <a data-test-id="assessNewSoiButton"
+                       class="govuk-button"
+                       data-module="govuk-button"
+                       asp-page="@LafPages.SoiV2.SchemeChecklist.ROUTE"
+                       asp-page-handler="@LafPages.SoiV2.SchemeChecklist.METHOD_GET_BY_ID"
+                       asp-route-statementOfIntentId="@Model.StatementOfIntentModel?.StatementOfIntentId">
+                        Continue assessment
+                    </a>
+                }
+                else if (Model.CanContinueEligibilityRoute)
+                {
+                    <a data-test-id="assessNewSoiButton"
+                       class="govuk-button"
+                       data-module="govuk-button"
+                       asp-page="@LafPages.SoiV2.EligibilityRoute2Proxy5.ROUTE"
+                       asp-page-handler="@LafPages.SoiV2.EligibilityRoute2Proxy5.METHOD_GET_BY_ID"
+                       asp-route-statementOfIntentId="@Model.StatementOfIntentModel?.StatementOfIntentId">
+                        Continue assessment
+                    </a>
+                }
+                else if (Model.CanContinueStatusSetting)
+                {
+                    <a data-test-id="assessNewSoiButton"
+                       class="govuk-button"
+                       data-module="govuk-button"
+                       asp-page="@LafPages.SoiV2.StatusSetting.ROUTE"
+                       asp-page-handler="@LafPages.SoiV2.StatusSetting.METHOD_GET_BY_ID"
+                       asp-route-statementOfIntentId="@Model.StatementOfIntentModel?.StatementOfIntentId">
+                        Continue assessment
+                    </a>
+                }
+                else
+                {
+                    <a data-test-id="assessNewSoiButton"
+                       class="govuk-button"
+                       data-module="govuk-button"
+                       asp-page="@LafPages.SoiV2.Edit.ROUTE"
+                       asp-route-onsCode="@Model.StatementOfIntentModel?.BaseLaOnsCode"
+                       asp-route-version="@Model.StatementOfIntentModel?.VersionNumber"
+                       asp-route-publishedDate="@Model.StatementOfIntentModel?.DateAdded?.ToString("yyyyMMdd")">
+                        Assess new SOI
+                    </a>
+                }
+            }
+
+            @if (Model.CanWithdrawnSoi)
+            {
+                <a data-test-id="withdrawSoiButton"
+                   class="govuk-button govuk-button--secondary"
+                   data-module="govuk-button"
+                   asp-page="@LafPages.SoiV2.Withdraw.ROUTE"
+                   asp-page-handler="@LafPages.SoiV2.Withdraw.METHOD_GET_BY_ID"
+                   asp-route-statementOfIntentId="@Model.StatementOfIntentModel?.StatementOfIntentId">
+                    Withdraw assessment
+                </a>
+            }
+
+        </div>
+
+    </form>
+
+
+    @if (Model.PriorStatementOfIntentList.Count > 0)
+    {
+
+        <hr class="govuk-section-break govuk-section-break--l">
+
+        <h2 class="govuk-heading-m">Previous versions of SOI</h2>
+
+        <div class="govuk-accordion" data-module="govuk-accordion" id="accordion-default">
+
+            @foreach (var priorSoi in Model.PriorStatementOfIntentList)
+            {
+                <div class="govuk-accordion__section">
+                    <div class="govuk-accordion__section-header">
+                        <h2 class="govuk-accordion__section-heading">
+                            <span class="govuk-accordion__section-button" id="accordion-default-heading-1">
+                                @priorSoi.VersionNumber
+                            </span>
+                        </h2>
+                    </div>
+                    <div id="accordion-default-content-1" class="govuk-accordion__section-content">
+                        <table class="govuk-table">
+                            <tbody class="govuk-table__body">
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header govuk-!-width-one-half">Date published</th>
+                                    <td class="govuk-table__cell govuk-!-width-one-third">@priorSoi.DateAdded</td>
+                                </tr>
+
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header govuk-!-width-one-half">SoI status</th>
+                                    <td class="govuk-table__cell govuk-!-width-one-third">
+                                        @await Html.PartialAsync("_StatementOfIntentStatus", priorSoi.SoiStatus)
+                                    </td>
+                                </tr>
+
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header govuk-!-width-one-half">Link to Statement of Intent</th>
+                                    <td class="govuk-table__cell govuk-!-width-one-third">
+                                        <a href="@priorSoi.SoiLink" target="_blank" class="govuk-link">@priorSoi.SoiLink</a>
+                                    </td>
+                                </tr>
+
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header govuk-!-width-one-half">Can submit on behalf of other authorities</th>
+                                    <td class="govuk-table__cell govuk-!-width-one-third">
+                                        <span>@(priorSoi.CanSubmit ? "Yes" : "No")</span>
+                                    </td>
+                                </tr>
+
+                                @if (priorSoi.CanSubmit)
+                                {
+                                    <tr class="govuk-table__row">
+                                        <th scope="row" class="govuk-table__header govuk-!-width-one-half">Local authority name</th>
+                                        <td class="govuk-table__cell govuk-!-width-one-third">
+                                            <span>@(priorSoi.DelegatedLocalAuthorityList)</span>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+
+}

@@ -1,0 +1,87 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model DeclarationDetailEditSummaryModel
+
+@{
+    ViewData["Title"] = "Summary Declaration Detail - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+
+<a asp-page="@LafPages.DeclarationDetailEdit.ROUTE"
+   asp-page-handler="@LafPages.DeclarationDetailEdit.METHOD_GET_FOR_CHANGE"
+   asp-route-declarationId="@Model.Declaration!.DeclarationId"
+   data-test-id="BackButton"
+   class="govuk-back-link">Back</a>
+
+@if (Model.Declaration != null)
+{
+
+    <form method="POST" onsubmit="disableSubmitButton()">
+
+        <!-- Error summary  -->
+        @if (!string.IsNullOrEmpty(Model.DisplayMessage))
+        {
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+                <div role="alert">
+                    <h2 data-test-id="CoreCheckText" class="govuk-error-summary__title">
+                        Error:
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul data-test-id="CoreCheckValue" class="govuk-list govuk-error-summary__list">
+                            <li>
+                                @Model.DisplayMessage
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <span class="govuk-caption-l" data-test-id="DeclarationDetailText">Confirm changes for</span>
+        <h1 class="govuk-heading-l" data-test-id="DeclarationUrnValue">@Model.Declaration?.Urn</h1>
+
+        <p class="govuk-body-l">
+            Confirm that you want to make changes for this declaration. If you submit, a new version of this declaration will be created, and the old version superseded.
+        </p>
+
+        @await Html.PartialAsync("Shared/_DeclarationDetailEditSummary", Model)
+
+        <div class="govuk-inset-text">
+            You have made changes to this declaration. Select 'Save changes and create new version' to keep those changes. This will archive the old declaration and process a new version. Select 'cancel' to undo your changes.
+        </div>
+
+        <div class="govuk-button-group govuk-!-static-margin-top-9">
+
+            @if (Model.Permissions.CanSave)
+            {
+                <button id="submitButton" data-test-id="GovukSaveNoteButton" class="govuk-button" data-module="govuk-button"
+                        type="submit">
+                    Save changes and create new version
+                </button>
+            }
+
+            <a asp-page="@LafPages.DeclarationDetailEdit.ROUTE"
+               asp-page-handler="@LafPages.DeclarationDetailEdit.METHOD_GET_FOR_CHANGE"
+               asp-route-declarationId="@Model.Declaration!.DeclarationId"
+               data-test-id="CancelButton"
+               class="govuk-link">Cancel</a>
+
+        </div>
+           
+    </form>
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+        //
+        // disable submit Button after click to prevent duplicate data entry
+        //
+        function disableSubmitButton() {
+            document.getElementById("submitButton").disabled = true;
+        }
+    </script>
+}

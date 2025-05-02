@@ -1,0 +1,74 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model SupersededDeclarationDetailModel
+
+@{
+    ViewData["Title"] = "SSD Detail - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+
+<a data-test-id="BackButton" asp-page="@LafPages.DeclarationDetail.ROUTE" class="govuk-back-link"
+   asp-page-handler="@LafPages.DeclarationDetail.METHOD_GET_WITH_ID_ACTION"
+   asp-route-declarationId="@Model.ActiveDeclarationId">
+    Back
+</a>
+
+
+@if (Model.Declaration != null)
+{
+
+    <form method="POST">
+
+        <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Important
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-notification-banner__heading">
+                    This declaration has been superseded by a newer version
+                </p>
+            </div>
+        </div>
+
+        <span class="govuk-caption-l" data-test-id="DeclarationDetailText">Declaration details for</span>
+        <h1 class="govuk-heading-l" data-test-id="DeclarationUrnValue">@Model.Declaration?.Urn &nbsp; (@Model.Version)</h1>
+
+        @await Html.PartialAsync("Shared/_DeclarationDetailSuperseded", Model)
+ 
+        @if (Model.Declaration is { DeclarationNotes: not null })
+        {
+            @if (Model.Declaration.DeclarationNotes.Count > 0)
+            {
+                <!-- Submission notes  -->
+
+                <h2 class="govuk-heading-m">Submission notes</h2>
+
+                <div class="govuk-details__text no-border-left govuk-!-padding-left-0">
+                    <!-- show the first note in the list-->
+                    <div class="laflex-notes-details">
+                        <div class="laflex-notes-date-name govuk-!-static-padding-bottom-2">
+                            <p class="govuk-!-display-inline govuk-body govuk-!-font-weight-bold ">@(Model.Declaration.DeclarationNotes[0].CreatedDate?.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_MONTH_FORMAT, CultureInfo.CreateSpecificCulture("en-GB")))</p>
+                            <p class="govuk-!-text-align-right govuk-!-display-inline govuk-body govuk-!-font-weight-bold" style="float: right;">Updated by: @Model.Declaration.DeclarationNotes[0].CreatedByName</p>
+                        </div>
+                        <p data-test-id="SubmissionNotesText" class="govuk-body">@Model.Declaration.DeclarationNotes[0].Text</p>
+                    </div>
+                </div>
+            }
+
+            @if (Model.Declaration is { DeclarationNotes.Count: > 1 })
+            {
+                ViewBag.CanDeleteNote = false;
+                ViewBag.Declaration = Model.Declaration;
+                ViewBag.IncludeDeleteButton = false;
+                @await Html.PartialAsync("_ShowNoteHistory", Model.Declaration)
+            }
+        }
+
+    </form>
+}

@@ -1,0 +1,79 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model EditProfileModel
+
+@{
+    ViewData["Title"] = "Edit local authority profile - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.PROFILES)" />
+
+<a class="govuk-back-link"
+   asp-page="@LafPages.ProfileV2.ROUTE"
+   asp-page-handler="@LafPages.ProfileV2.METHOD_GET_BY_ONS"
+   asp-route-onsCode="@Model.OnsCode">
+    Back
+</a>
+
+<!-- Error summary  -->
+@if (Model.HasMessage)
+{
+    @await Html.PartialAsync("_ShowErrorSummary", Model.DisplayPageErrors)
+}
+
+<h1 class="govuk-heading-l" id="edit-profile">Edit local authority profile</h1>
+
+<form method="POST">
+    
+    <input asp-for="OnsCode" type="hidden" />
+
+    <div class="govuk-form-group @(Model.ErrorName ? "govuk-form-group--error" : "")">
+        <label class="govuk-label govuk-label--s" for="LA">
+            What is the name of the Local authority?
+        </label>
+        
+        @if (@Model.ErrorName)
+        {
+            <p id="ExternalUser_FirstName-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> @Model.GetNameErrorMessage
+            </p>
+        }
+
+        <input class="govuk-input govuk-!-width-one-half @(Model.ErrorName ? "govuk-input--error" : "")"
+               id="Name" 
+               name="Name" 
+               type="text"
+               asp-for="Name">
+    </div>
+
+    <div class="govuk-form-group @(Model.ErrorEmail ? "govuk-form-group--error" : "")">
+        <label class="govuk-label govuk-label--s" for="Email">
+            Email
+        </label>
+        
+        @if (@Model.ErrorEmail)
+        {
+            <p id="ExternalUser_FirstName-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> @Model.GetEmailErrorMessage
+            </p>
+        }
+
+        <input class="govuk-input govuk-!-width-one-half @(Model.ErrorEmail ? "govuk-input--error" : "")" id="Email" name="Email" type="text" asp-for="Email">
+    </div>
+
+    <div class="govuk-button-group  govuk-!-static-margin-top-9">
+        @if (Model.Permissions.CanEditProfile)
+        {
+            <button class="govuk-button" data-module="govuk-button" type="submit"
+                    asp-page-handler="@LafPages.EditProfile.METHOD_SAVE">
+                Save profile
+            </button>
+        }
+
+        <a class="govuk-link"
+           asp-page="@LafPages.ProfileV2.ROUTE"
+           asp-page-handler="@LafPages.ProfileV2.METHOD_GET_BY_ONS"
+           asp-route-onsCode="@Model.OnsCode">Cancel</a>
+    </div>
+</form>

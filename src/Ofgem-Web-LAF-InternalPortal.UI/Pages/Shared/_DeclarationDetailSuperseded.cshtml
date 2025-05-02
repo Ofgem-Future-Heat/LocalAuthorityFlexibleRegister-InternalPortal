@@ -1,0 +1,12 @@
+﻿@model Ofgem_Web_LAF_InternalPortal.Pages.Declarations.SupersededDeclarationDetailModel
+
+@if (Model.Declaration != null)
+{
+    @await Html.PartialAsync("_DeclarationDetailAddress", (Model.Declaration.AddressLine1, Model.Declaration.AddressLine2, Model.Declaration.PostCode, Model.DeclarationErrorFields))
+
+    @await Html.PartialAsync("_DeclarationDetailErrorSummary", Model.Declaration)
+
+    @await Html.PartialAsync("_DeclarationDetailReferral", (Model.Declaration, Model.DeclarationErrorFields, false))
+
+    @await Html.PartialAsync("_DeclarationDetailAssessment", Model.Declaration)
+}

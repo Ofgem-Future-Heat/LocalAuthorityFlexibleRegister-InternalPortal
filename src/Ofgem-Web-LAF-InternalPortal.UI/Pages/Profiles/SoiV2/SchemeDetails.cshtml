@@ -1,0 +1,223 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.SchemeDetails
+
+@{
+    ViewData["Title"] = "Scheme details checklist - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+@if (Model.ShowForm)
+{
+    <a asp-page="@LafPages.SoiV2.InitialAssessmentChecklist.ROUTE"
+       asp-page-handler="@LafPages.SoiV2.InitialAssessmentChecklist.METHOD_GET_BY_ID"
+       asp-route-statementOfIntentId="@Model.StatementOfIntentId"
+       data-test-id="BackButton"
+       class="govuk-back-link">Back</a>
+}
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+@if (Model.ShowForm)
+{
+    <main class="govuk-main-wrapper " id="main-content" role="main">
+
+        <h1 class="govuk-heading-l">Scheme details checklist for @Model.LocalAuthorityName Statement of Intent</h1>
+
+        <form method="POST">
+            <input asp-for="OnsCode" type="hidden" />
+            <input asp-for="LocalAuthorityId" type="hidden" />
+            <input asp-for="StatementOfIntentId" type="hidden" />
+
+            <div class="govuk-form-group @(Model.SchemeNameHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        Which scheme(s) is indicated on the Statement of Intent that the local authority will administer?
+                    </legend>
+
+                    @if (Model.SchemeNameHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @Model.DisplayMessage
+                        </div>
+                    }
+
+                    <div class="govuk-radios"
+                         data-module="govuk-radios">
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="ForSchemeECO4" name="ForScheme"
+                                   type="radio" value="ECO4" asp-for="ForScheme">
+                            <label class="govuk-label govuk-radios__label" for="ForSchemeECO4">
+                                ECO4
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="ForSchemeGBIS" name="ForScheme"
+                                   type="radio" value="GBIS" asp-for="ForScheme">
+                            <label class="govuk-label govuk-radios__label" for="ForSchemeGBIS">
+                                GBIS
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="ForSchemeECO4andGBIS" name="ForScheme"
+                                   type="radio" value="ECO4andGBIS" asp-for="ForScheme">
+                            <label class="govuk-label govuk-radios__label" for="ForSchemeECO4andGBIS">
+                                Both ECO4 Flex and GBIS Flex
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__divider">or</div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="ForSchemeNoScheme" name="ForScheme"
+                                   type="radio" value="NoScheme" asp-for="ForScheme">
+                            <label class="govuk-label govuk-radios__label" for="ForSchemeNoScheme">
+                                No scheme indicated (will result in failed assessment)
+                            </label>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+
+
+            <!--Additional question-->
+            <div class="govuk-form-group @(Model.PublishDateHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset" aria-describedby="publish-date-hint">
+                    <legend class="govuk-fieldset__legend--m">
+                        Is the Statement of Intent published date correct?
+                    </legend>
+
+                    @if (Model.PublishDateHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @Model.DisplayMessage
+                        </div>
+                    }
+
+                    <div class="govuk-radios" data-module="govuk-radios">
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsPublishDateCorrectYes" name="IsPublishedDateCorrect" type="radio"
+                                   value="true" asp-for="IsPublishedDateCorrect">
+                            <label class="govuk-label govuk-radios__label" for="IsPublishDateCorrectYes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsPublishDateCorrectNo" name="IsPublishedDateCorrect" type="radio"
+                                   value="false" asp-for="IsPublishedDateCorrect">
+                            <label class="govuk-label govuk-radios__label" for="IsPublishDateCorrectNo">
+                                No
+                            </label>
+                        </div>
+
+                        @* <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="IsPublishDateCorrectNotProvided" name="IsPublishDateCorrect" type="radio"
+                               value="NotProvided" asp-for="IsPublishDateCorrect">
+                        <label class="govuk-label govuk-radios__label" for="IsPublishDateCorrectNotProvided">
+                            Published date not provided (will result in failed assessment)
+                        </label>
+                    </div> *@
+                    </div>
+                </fieldset>
+            </div>
+
+            <!--Second question-->
+            <div class="govuk-form-group @(Model.Proxy5PartOfRoute2HasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset" aria-describedby="publish-date-hint">
+                    <legend class="govuk-fieldset__legend--m">
+                        Does the Statement of Intent indicate that proxy 5 is being used as part of referral route 2?
+                    </legend>
+
+                    @if (Model.Proxy5PartOfRoute2HasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @Model.DisplayMessage
+                        </div>
+                    }
+
+                    <div id="soi-link-hint" class="govuk-hint">
+                        Proxy 5 refers to a consumer supported by a scheme established by the local authority, aimed at individuals living on a low income and vulnerable to the cold, as defined by NICE Guideline NG6
+                    </div>
+                    <div class="govuk-radios" data-module="govuk-radios">
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsProxy5PartOfRoute2Yes" name="IsProxy5PartOfRoute2" type="radio"
+                                   value="true" asp-for="IsProxy5PartOfRoute2">
+                            <label class="govuk-label govuk-radios__label" for="IsProxy5PartOfRoute2Yes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsProxy5PartOfRoute2No" name="IsProxy5PartOfRoute2" type="radio"
+                                   value="false" asp-for="IsProxy5PartOfRoute2">
+                            <label class="govuk-label govuk-radios__label" for="IsProxy5PartOfRoute2No">
+                                No
+                            </label>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+
+            <!--Third question
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" aria-describedby="logo-hint">
+                    <legend class="govuk-fieldset__legend--m">
+                        Is the Ofgem logo shown on the Statement of Intent?
+                    </legend>
+
+                    <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="logo-1" name="logo" type="radio" value="yes" data-aria-controls="conditional-logo-1">
+                        <label class="govuk-label govuk-radios__label" for="logo-1">
+                            Yes
+                        </label>
+                    </div>
+
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="logo-2" name="logo" type="radio" value="n/a" data-aria-controls="conditional-logo-2">
+                        <label class="govuk-label govuk-radios__label" for="logo-2">
+                            No
+                        </label>
+                    </div>
+
+                </fieldset>
+            </div>-->
+
+
+            <div class="govuk-button-group govuk-!-margin-top-8">
+                @if (Model.Permissions.CanContinue)
+                {
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            asp-page="@LafPages.SoiV2.SchemeChecklist.ROUTE"
+                            asp-page-handler="@LafPages.SoiV2.SchemeChecklist.METHOD_SAVE_CONTINUE"
+                            asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                        Continue
+                    </button>
+                }
+
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.SchemeChecklist.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.SchemeChecklist.METHOD_SAVE_EXIT"
+                        asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                    Save and exit
+                </button>
+            </div>
+
+        </form>
+
+    </main>
+}

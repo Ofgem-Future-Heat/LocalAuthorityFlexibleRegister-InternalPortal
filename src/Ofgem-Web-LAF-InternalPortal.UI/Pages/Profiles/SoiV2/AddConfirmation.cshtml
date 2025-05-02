@@ -1,0 +1,40 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model AddSoiV2Confirmation
+@{
+    ViewData["Title"] = "Soi version created";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                New Statement of Intent version created
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            <h3 class="govuk-notification-banner__heading">
+                You can now add details of version @Model.StatementOfIntentModel?.VersionNumber for @Model.StatementOfIntentModel?.LocalAuthority
+            </h3>
+            <p class="govuk-body"></p>
+        </div>
+    </div>
+
+
+    <div class="govuk-button-group govuk-!-margin-top-8">
+
+        <a role="button" draggable="false" class="govuk-button" data-module="govuk-button"
+           asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+           asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+           asp-route-statementOfIntentId="@Model.StatementOfIntentModel?.StatementOfIntentId">
+            Go to statement of intent details for @Model.StatementOfIntentModel?.LocalAuthority
+        </a>
+
+    </div>
+
+</main>

@@ -1,0 +1,204 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@using Ofgem.LAF.SharedLibrary.Enums
+@model Ofgem_Web_LAF_InternalPortal.Pages.Uploads.LogsModel
+@{
+    ViewData["Title"] = "Logs - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.UPLOAD_LOG)" />
+
+<br />
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+
+    <h1 class="govuk-heading-l">Logs</h1>
+
+    <h2 class="govuk-heading-m">Upload log</h2>
+
+
+    <table class="govuk-table" aria-label="Bulk declaration uploads and the result counts">
+
+
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+
+                <th scope="col" class="govuk-table__header">Added/Upload ID</th>
+
+                <th scope="col" class="govuk-table__header">Who</th>
+
+                <th scope="col" class="govuk-table__header">State</th>
+
+                <th scope="col" class="govuk-table__header">Local authority</th>
+
+                <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Comments</th>
+
+            </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+            @if (Model.Uploads is { Count: > 0 })
+            {
+                @foreach (var upload in Model.Uploads)
+                {
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">
+                            @if (upload.When != null)
+                            {
+                                @upload.When.Value.ToString("hh:mm tt")
+                                <span> on </span>
+                                <br />
+                                @upload.When.Value.ToString("dd/MM/yyyy")
+                                <br />
+                                <span class="govuk-body-s">@upload.UploadId</span>
+                            }
+                        </td>
+                        <td class="govuk-table__cell" style="white-space: normal !important;">
+                            @upload.Who
+                        </td>
+                        <td class="govuk-table__cell">
+                            @switch (upload.State)
+                            {
+                                case UploadStatus.ProcessingComplete:
+                                    if (upload.HasErrors)
+                                    {
+                                        <span>Contains errors</span>
+                                        @if (Model.Permissions.CanDownLoadErrors)
+                                        {
+                                            <br />
+                                            <a asp-page="@LafPages.UploadLog.ROUTE"
+                                               asp-page-handler="@LafPages.UploadLog.METHOD_DOWNLOAD_ERRORS"
+                                               asp-route-uploadId="@upload.UploadId"
+                                               asp-route-localAuthority="@upload.LocalAuthority">
+                                                Download errors
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>Successful upload</span>
+                                    }
+
+                                    break;
+                                case UploadStatus.ProcessingCompleteOverwriteDuplicates:
+                                    @if (upload.HasErrors)
+                                    {
+                                        <span>With superseded</span>
+                                        @if (Model.Permissions.CanDownLoadErrors)
+                                        {
+                                            <br />
+                                            <a asp-page="@LafPages.UploadLog.ROUTE"
+                                               asp-page-handler="@LafPages.UploadLog.METHOD_DOWNLOAD_ERRORS"
+                                               asp-route-uploadId="@upload.UploadId"
+                                               asp-route-localAuthority="@upload.LocalAuthority">
+                                                Download errors
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>With superseded</span>
+                                    }
+                                    break;
+                                case UploadStatus.ProcessingCompleteIgnoreDuplicates:
+
+                                    @if (upload.HasErrors)
+                                    {
+                                        <span>Not superseded</span>
+                                        @if (Model.Permissions.CanDownLoadErrors)
+                                        {
+                                            <br />
+                                            <a asp-page="@LafPages.UploadLog.ROUTE"
+                                               asp-page-handler="@LafPages.UploadLog.METHOD_DOWNLOAD_ERRORS"
+                                               asp-route-uploadId="@upload.UploadId"
+                                               asp-route-localAuthority="@upload.LocalAuthority">
+                                                Download errors
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>Not superseded</span>
+                                    }
+                                    break;
+                                case UploadStatus.FileHasDuplicates:
+                                    <span>Awaiting a decision to overwrite duplicates</span>
+                                    break;
+                            }
+                        </td>
+                        <td class="govuk-table__cell" style="white-space: normal !important;">
+                            @upload.LocalAuthority
+                        </td>
+                        <td class="govuk-table__cell" style="white-space: normal !important;">
+                            @Html.Raw(@upload.Comments)
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <p class="govuk-body"><a asp-page="@LafPages.UploadLog.ROUTE">View entire upload log</a></p>
+
+
+    <hr class="govuk-section-break govuk-section-break--l">
+
+    <h2 class="govuk-heading-m">Statement of Intent log</h2>
+
+
+    <table class="govuk-table">
+
+
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+
+                <th scope="col" class="govuk-table__header">When</th>
+
+                <th scope="col" class="govuk-table__header">Who</th>
+
+                <th scope="col" class="govuk-table__header">Local authority</th>
+
+                <th scope="col" class="govuk-table__header govuk-!-width-one-thirds">Comments</th>
+
+            </tr>
+        </thead>
+
+        <tbody class="govuk-table__body">
+            @if (Model.StatementOfIntentLogs is { Count: > 0 })
+            {
+                @foreach (var soiLog in Model.StatementOfIntentLogs)
+                {
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">
+                            @if (soiLog.CreatedDate != null)
+                            {
+                                @soiLog.CreatedDate.Value.ToString("hh:mm tt")
+                                <span> on </span>
+                                <br />
+                                @soiLog.CreatedDate.Value.ToString("dd/MM/yyyy")
+                            }
+
+
+                        </td>
+                        <td class="govuk-table__cell" style="white-space: normal !important;">
+                            @soiLog.CreatedByName
+                        </td>
+                        <td class="govuk-table__cell" style="white-space: normal !important;">
+                            @soiLog.LocalAuthorityName
+                        </td>
+                        <td class="govuk-table__cell" style="white-space: normal !important;">
+                            @Html.Raw(@soiLog.Comment)
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    @if (Model.StatementOfIntentLogs is { Count: > 0 })
+    {
+        <p class="govuk-body"><a asp-page="@LafPages.StatementOfIntentLog.ROUTE">View entire Statement of Intent log</a></p>
+    }
+
+</main>

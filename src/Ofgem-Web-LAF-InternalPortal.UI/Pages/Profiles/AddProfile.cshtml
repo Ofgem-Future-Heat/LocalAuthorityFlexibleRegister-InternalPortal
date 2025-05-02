@@ -1,0 +1,103 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model AddProfileModel
+
+@{
+    ViewData["Title"] = "New local authority profile - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.PROFILES)" />
+
+<a asp-page="@LafPages.Profiles.ROUTE" class="govuk-back-link">Back</a>
+
+<!-- Error summary  -->
+@if (Model.HasMessage)
+{
+    @await Html.PartialAsync("_ShowErrorSummary", Model.DisplayPageErrors)
+}
+
+<h1 class="govuk-heading-l" id="add-profile">Add a new local authority profile</h1>
+
+<form method="POST">
+    <main class="govuk-main-wrapper " id="add-profile-main-content" role="main">
+
+        <div class="govuk-form-group @(Model.ErrorName ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="Name">
+                What is the name of the local authority?
+            </label>
+
+            @if (@Model.ErrorName)
+            {
+                <p id="Name-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetNameErrorMessage
+                </p>
+            }
+
+            <input class="govuk-input govuk-!-width-one-half @(Model.ErrorName ? "govuk-input--error" : "")"
+                   id="Name"
+                   name="Name"
+                   type="text"
+                   asp-for="Name">
+        </div>
+
+        <div class="govuk-form-group @(Model.ErrorOnsCode ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="OnsCode">
+                What is ONS code of the local authority?
+            </label>
+            
+            @if (@Model.ErrorOnsCode)
+            {
+                <p id="OnsCode-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetOnsCodeErrorMessage
+                </p>
+            }
+
+            <div id="ONS-No-hint" class="govuk-hint">
+                Ensure this is correct as you will not be able to edit this once created!
+            </div>
+            <input class="govuk-input govuk-!-width-one-half @(Model.ErrorOnsCode ? "govuk-input--error" : "")"
+                   id="OnsCode" name="OnsCode" type="text"
+                   aria-describedby="ONS-No-hint"
+                   asp-for="OnsCode">
+        </div>
+
+        <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                    Help with ONS codes
+                </span>
+            </summary>
+            <div class="govuk-details__text">
+                This will be a letter followed by 8 numbers. For example A12345678.
+            </div>
+        </details>
+
+        <div class="govuk-form-group @(Model.ErrorEmail ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="Email">
+                Email
+            </label>
+            
+            @if (@Model.ErrorEmail)
+            {
+                <p id="Email-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetEmailErrorMessage
+                </p>
+            }
+
+            <input class="govuk-input govuk-!-width-one-half @(Model.ErrorEmail ? "govuk-input--error" : "")" id="Email" name="Email" type="text" asp-for="Email">
+        </div>
+
+        <div class="govuk-button-group  govuk-!-static-margin-top-9">
+            @if (Model.Permissions.CanAddProfile)
+            {
+                <button class="govuk-button" data-module="govuk-button" type="submit"
+                        asp-page-handler="@LafPages.AddProfile.METHOD_ADD">
+                    Create profile
+                </button>
+            }
+
+            <a asp-page="@LafPages.Profiles.ROUTE" class="govuk-link">Cancel</a>
+        </div>
+    </main>
+</form>

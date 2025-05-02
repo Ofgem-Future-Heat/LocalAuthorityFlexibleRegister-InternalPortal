@@ -1,0 +1,19 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css",
+      "wwwroot/css/Header.css",
+      "wwwroot/css/Navigation.css",
+      "wwwroot/css/Messages.css",
+      "wwwroot/css/Tags.css",
+      "wwwroot/css/Button.css",
+      "wwwroot/css/Table.css",
+      "wwwroot/css/Banner.css",
+      "wwwroot/css/Paragraph.css",
+      "wwwroot/css/Input.css",
+      "wwwroot/css/Error.css",
+      "wwwroot/css/SelectButtonList.css"
+    ]
+  }
+]

@@ -1,0 +1,134 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.EligibilityRoute2Proxy5
+@{
+    ViewData["Title"] = "Eligibility Route 2 - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+@if (Model.ShowForm)
+{
+    <a asp-page="@LafPages.SoiV2.SchemeChecklist.ROUTE"
+       asp-page-handler="@LafPages.SoiV2.SchemeChecklist.METHOD_GET_BY_ID"
+       asp-route-statementOfIntentId="@Model.StatementOfIntentId"
+       data-test-id="BackButton" class="govuk-back-link">Back</a>
+}
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+@if (Model.ShowForm)
+{
+    <main class="govuk-main-wrapper " id="main-content" role="main">
+
+
+        <h1 class="govuk-heading-l">Eligibility for Route 2 Proxy 5 for @Model.LocalAuthorityName</h1>
+
+        <form method="POST">
+
+            <input asp-for="IsProxy5PartOfRoute2" type="hidden" />
+
+            <!--Third question-->
+            <div class="govuk-form-group @(Model.Proxy5SchemePresentError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset" aria-describedby="proxy-hint">
+                    <legend class="govuk-fieldset__legend--m">
+                        If Proxy 5 is being used, does the local authority name and describe the scheme in the Statement of Intent?
+                    </legend>
+
+                    @if (Model.Proxy5SchemePresentError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DisplayMessage)
+                        </div>
+                    }
+
+                    <div id="Proxy5SchemePresent-hint" class="govuk-hint">
+                        Ensure the scheme for Route 2, Proxy 5 is named and described, and check if it adheres to NICE Guideline NG6. NG6 focuses on reducing health risks associated with cold homes by improving energy efficiency, developing strategies for vulnerable groups, and ensuring buildings meet required standards. If the scheme is not named, described, or does not comply with NG6, any Declarations relying on Route 2, Proxy 5 must be rejected until the issue is resolved.
+                    </div>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsProxy5SchemePresentYes" name="IsProxy5SchemePresent" type="radio"
+                                   value="true" asp-for="IsProxy5SchemePresent">
+                            <label class="govuk-label govuk-radios__label" for="IsProxy5SchemePresentYes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsProxy5SchemePresentNo" name="IsProxy5SchemePresent" type="radio"
+                                   value="false" asp-for="IsProxy5SchemePresent">
+                            <label class="govuk-label govuk-radios__label" for="IsProxy5SchemePresentNo">
+                                No
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+            <!--Fourth question-->
+            <div class="govuk-form-group @(Model.DescriptionNiceNg6Recommendation2Error ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset" aria-describedby="proxy5-hint">
+                    <legend class="govuk-fieldset__legend--m">
+                        If yes, does the description adhere to NICE Guideline NG6, Recommendation 2?
+                    </legend>
+                    @if (Model.DescriptionNiceNg6Recommendation2Error)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @(Model.DescriptionNiceNg6ErrorMessage)
+                        </div>
+                    }
+
+                    <div id="DescriptionNiceNg6-hint" class="govuk-hint">
+                        Does the scheme description relate to consumer protection for one or more of the following groups: consumers vulnerable to living within a cold home, consumers living with a long-term and/or severe medical condition, low-income consumers, elderly consumers, consumers with young children, consumers with a disability, consumers with a mental health condition, or pregnant consumers?
+                    </div>
+                    <div class="govuk-radios" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsDescriptionNiceNg6Recommendation2Yes" name="IsDescriptionNiceNg6Recommendation2" type="radio"
+                                   value="true" asp-for="IsDescriptionNiceNg6Recommendation2">
+                            <label class="govuk-label govuk-radios__label" for="IsDescriptionNiceNg6Recommendation2Yes">
+                                Yes
+                            </label>
+                        </div>
+
+                        <div class="govuk-radios__item">
+                            <input class="govuk-radios__input" id="IsDescriptionNiceNg6Recommendation2No" name="IsDescriptionNiceNg6Recommendation2" type="radio"
+                                   value="false" asp-for="IsDescriptionNiceNg6Recommendation2">
+                            <label class="govuk-label govuk-radios__label" for="IsDescriptionNiceNg6Recommendation2No">
+                                No
+                            </label>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+
+            <div class="govuk-button-group govuk-!-margin-top-8">
+                @if (Model.Permissions.CanContinue)
+                {
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            asp-page="@LafPages.SoiV2.EligibilityRoute2Proxy5.ROUTE"
+                            asp-page-handler="@LafPages.SoiV2.EligibilityRoute2Proxy5.METHOD_SAVE_CONTINUE"
+                            asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                        Continue
+                    </button>
+                }
+
+
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.EligibilityRoute2Proxy5.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.EligibilityRoute2Proxy5.METHOD_SAVE_EXIT"
+                        asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                    Save and exit
+                </button>
+            </div>
+
+        </form>
+
+    </main>
+}

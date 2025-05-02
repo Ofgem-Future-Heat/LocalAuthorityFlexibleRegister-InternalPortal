@@ -1,0 +1,145 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.ExternalUsers.EditExternalUserModel
+
+@{
+    ViewData["Title"] = "Edit external user profile - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.EXTERNALUSERS)" />
+
+<a asp-page="@LafPages.ExternalUsers.ROUTE" class="govuk-back-link">Back</a>
+
+
+<!-- Error summary  -->
+@if (Model.HasMessage)
+{
+    @await Html.PartialAsync("_ShowErrorSummary", Model.DisplayPageErrors)
+}
+
+<h1 class="govuk-heading-l" id="add-ExternalUser">Edit external user</h1>
+
+<form method="POST">
+
+    <input type="hidden" asp-for="ExternalUser.UserId" />
+    <input type="hidden" asp-for="ExternalUser.EmailAddress" />
+    <input type="hidden" asp-for="ExternalUser.IsActive" />
+    <input type="hidden" asp-for="ExternalUser.IsExternal" />
+
+    <main class="govuk-main-wrapper " id="add-ExternalUser-main-content" role="main">
+
+        <div class="govuk-form-group @(Model.ErrorFirstname ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="ExternalUser_FirstName">
+                First name
+            </label>
+
+            @if (@Model.ErrorFirstname)
+            {
+                <p id="ExternalUser_FirstName-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetFirstNameErrorMessage
+                </p>
+            }
+
+            <input data-test-id="first-name-input" class="govuk-input govuk-!-width-one-half @(Model.ErrorFirstname ? "govuk-input--error" : "")"
+                   id="ExternalUser_FirstName"
+                   type="text"
+                   asp-for="ExternalUser.FirstName"
+                   data-test-id="first-name-table-cell" />
+        </div>
+        <div class="govuk-form-group @(Model.ErrorLastname ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="ExternalUser_LastName">
+                Last name
+            </label>
+
+            @if (@Model.ErrorLastname)
+            {
+                <p id="ExternalUser_LastName-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetLastNameErrorMessage
+                </p>
+            }
+
+            <input data-test-id="last-name-input" class="govuk-input govuk-!-width-one-half @(Model.ErrorLastname ? "govuk-input--error" : "")"
+                   id="ExternalUser_LastName"
+                   type="text"
+                   asp-for="ExternalUser.LastName"
+                   data-test-id="last-name-table-cell" />
+        </div>
+        <div class="govuk-form-group @(Model.ErrorEmail ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="ExternalUser_EmailAddress">
+                Email address
+                <div class="govuk-hint">
+                    You cannot change the email address, as this is maintained by One Login.
+                </div>
+            </label>
+
+            @if (@Model.ErrorEmail)
+            {
+                <p id="ExternalUser_EmailAddress-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetEmailErrorMessage
+                </p>
+            }
+
+            <input data-test-id="email-address-input" class="govuk-input govuk-!-width-one-half @(Model.ErrorEmail ? "govuk-input--error" : "")"
+                   id="ExternalUser_EmailAddress"
+                   type="text"
+                   asp-for="ExternalUser.EmailAddress"
+                   disabled="disabled"
+                   data-test-id="email-address-table-cell" />
+        </div>
+
+        <div class="govuk-form-group @(Model.ErrorLocalAuthority ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="local-authority">
+                Local authority
+            </label>
+
+            @if (@Model.ErrorLocalAuthority)
+            {
+                <p id="local-authority-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetLocalAuthorityErrorMessage
+                </p>
+            }
+
+            <select data-test-id="local-authority-input" id="local-authority"
+                    class="govuk-select @(Model.ErrorLocalAuthority ? "govuk-select--error" : "")" style="min-width: 75px!important;"
+                    name="SelectedLa"
+                    asp-items="Model.LaSelectList"
+                    data-test-id="local-authority-table-cell">
+            </select>
+
+        </div>
+
+        <div class="govuk-form-group @(Model.ErrorExternalUserType ? "govuk-form-group--error" : "")">
+            <label class="govuk-label govuk-label--s" for="user-types">
+                User type
+            </label>
+
+            @if (@Model.ErrorExternalUserType)
+            {
+                <p id="user-types-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> @Model.GetUserTypeErrorMessage
+                </p>
+            }
+
+            <select data-test-id="user-type-input" id="user-types"
+                    class="govuk-select @(Model.ErrorExternalUserType ? "govuk-select--error" : "")" style="min-width: 75px!important;"
+                    name="SelectedUserType"
+                    asp-items="Model.UserTypes"
+                    data-test-id="user-type-table-cell">
+            </select>
+
+        </div>
+
+        <div class="govuk-button-group  govuk-!-static-margin-top-9">
+            @if (Model.Permissions.CanAdd)
+            {
+                <button data-test-id="external-user-add-create-btn" class="govuk-button" data-module="govuk-button" type="submit"
+                        asp-page-handler="@LafPages.ExternalUsers.Edit.METHOD_UPDATE">
+                    Update
+                </button>
+            }
+
+            <a asp-page="@LafPages.ExternalUsers.ROUTE" class="govuk-link">Cancel</a>
+        </div>
+    </main>
+</form>

@@ -1,0 +1,90 @@
+﻿@* ReSharper disable Html.PathError *@
+
+<ul class="moj-primary-navigation__list">
+
+    @{
+        switch (TempData[Extensions.LafPageMenus.TEMP_DATA_ROLE_KEY])
+        {
+            case Ofgem.LAF.SharedLibrary.Models.UserRoles.Basic:
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.DASHBOARD)" class="moj-primary-navigation__link" href="\Dashboard">Dashboard</a>
+                </li>
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.SOI_DASHBOARD)" class="moj-primary-navigation__link" href="\Profiles\SoiV2\Dashboard">Statements of Intent</a>
+                </li>
+                <li data-test-id="ProfilesMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.PROFILES)" class="moj-primary-navigation__link" href="\Profiles\Profiles">Profiles</a>
+                </li>
+                break;
+
+            case Ofgem.LAF.SharedLibrary.Models.UserRoles.Standard:
+
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.DASHBOARD)" class="moj-primary-navigation__link" href="\Dashboard">Dashboard</a>
+                </li>
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.SOI_DASHBOARD)" class="moj-primary-navigation__link" href="\Profiles\SoiV2\Dashboard">Statements of Intent</a>
+                </li>
+                <li data-test-id="ProfilesMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.PROFILES)" class="moj-primary-navigation__link" href="\Profiles\Profiles">Profiles</a>
+                </li>
+                <li data-test-id="UploadsMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.UPLOAD_LOG)" class="moj-primary-navigation__link" href="\Uploads\Logs">Logs</a>
+                </li>
+                break;
+
+            case Ofgem.LAF.SharedLibrary.Models.UserRoles.Advanced:
+
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.DASHBOARD)" class="moj-primary-navigation__link" href="\Dashboard">Dashboard</a>
+                </li>
+
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.SOI_DASHBOARD)" class="moj-primary-navigation__link" href="\Profiles\SoiV2\Dashboard">Statements of Intent</a>
+                </li>
+
+                <li data-test-id="ProfilesMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.PROFILES)" class="moj-primary-navigation__link" href="\Profiles\Profiles">Profiles</a>
+                </li>
+
+                <li data-test-id="UploadsMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.UPLOAD_LOG)" class="moj-primary-navigation__link" href="\Uploads\Logs">Logs</a>
+                </li>
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.EXTERNALUSERS)" class="moj-primary-navigation__link" href="\ExternalUsers\ExternalUsers">External Users</a>
+                </li>
+
+                break;
+
+            case Ofgem.LAF.SharedLibrary.Models.UserRoles.Admin:
+            case Ofgem.LAF.SharedLibrary.Models.UserRoles.Expert:
+            
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.DASHBOARD)" class="moj-primary-navigation__link" href="\Dashboard">Dashboard</a>
+                </li>
+
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.SOI_DASHBOARD)" class="moj-primary-navigation__link" href="\Profiles\SoiV2\Dashboard">Statements of Intent</a>
+                </li>
+
+                <li data-test-id="ProfilesMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.PROFILES)" class="moj-primary-navigation__link" href="\Profiles\Profiles">Profiles</a>
+                </li>
+
+                <li data-test-id="UploadsMenuLink" class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.UPLOAD_LOG)" class="moj-primary-navigation__link" href="\Uploads\Logs">Logs</a>
+                </li>
+
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.ADMIN)" class="moj-primary-navigation__link" href="\Admin\Admin">Admin</a>
+                </li>
+
+                <li class="moj-primary-navigation__item">
+                    <a id="@(Extensions.LafPageMenus.EXTERNALUSERS)" class="moj-primary-navigation__link" href="\ExternalUsers\ExternalUsers">External Users</a>
+                </li>
+
+                break;
+        }
+    }
+
+</ul>

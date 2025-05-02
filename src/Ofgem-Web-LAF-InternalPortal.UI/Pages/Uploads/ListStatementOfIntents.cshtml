@@ -1,0 +1,96 @@
+﻿@page
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Uploads.ListStatementOfIntentsModel
+@{
+    ViewData["Title"] = "Logs - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.UPLOAD_LOG)" />
+
+<br />
+
+<a asp-page="@LafPages.Logs.ROUTE" class="govuk-back-link">Back</a>
+
+@if (Model.ShowNotification)
+{
+    <div class="govuk-notification-banner" role="region"
+         aria-labelledby="govuk-notification-banner-title"
+         data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Information
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            @if (Model.HasDisplayMessage)
+            {
+                <p class="govuk-notification-banner__heading">@Model.DisplayMessage</p>
+            }
+        </div>
+    </div>
+}
+
+<form method="POST">
+
+    <main class="govuk-main-wrapper " id="list-soi-main-content" role="main">
+
+
+
+        <h1 class="govuk-heading-l">Statement of Intent log</h1>
+
+
+        <table class="govuk-table">
+
+
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+
+                    <th scope="col" class="govuk-table__header">When</th>
+
+                    <th scope="col" class="govuk-table__header">Who</th>
+
+                    <th scope="col" class="govuk-table__header">Local authority</th>
+
+                    <th scope="col" class="govuk-table__header govuk-!-width-one-thirds">Comments</th>
+
+                </tr>
+            </thead>
+
+            <tbody class="govuk-table__body">
+                @if (Model.StatementOfIntentLogs != null)
+                {
+                    @foreach (var soiLog in Model.StatementOfIntentLogs)
+                    {
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">
+                                @if (soiLog.CreatedDate != null)
+                                {
+                                    @soiLog.CreatedDate.Value.ToString("hh:mm tt")
+                                    <span> on </span>
+                                    <br />
+                                    @soiLog.CreatedDate.Value.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+
+                            <td class="govuk-table__cell" style="white-space: normal !important;">
+                                @soiLog.CreatedByName
+                            </td>
+
+                            <td class="govuk-table__cell" style="white-space: normal !important;">
+                                @soiLog.LocalAuthorityName
+                            </td>
+
+                            <td class="govuk-table__cell" style="white-space: normal !important;">
+                                @Html.Raw(@soiLog.Comment)
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </main>
+
+    @await Html.PartialAsync("_Pagination", Model.Pagination)
+
+
+</form>

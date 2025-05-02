@@ -1,0 +1,169 @@
+﻿@page
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model ProfilesModel
+
+@{
+    ViewData["Title"] = "Local authority profiles list - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.PROFILES)" />
+
+<br />
+
+@if (Model.ShowNotification)
+{
+    <div class="govuk-notification-banner" role="region"
+         aria-labelledby="govuk-notification-banner-title"
+         data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Information
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            @if (Model.HasDisplayMessage)
+            {
+                <p class="govuk-notification-banner__heading">@Model.DisplayMessage</p>
+            }
+        </div>
+    </div>
+}
+
+<h1 class="govuk-heading-l" id="list-profiles">Local authority Profiles</h1>
+
+<form method="POST">
+
+    <!-- Filter box -->
+    <div class="govuk-grid-row">
+
+        <!--dummy change-->
+        <!-- Results Area -->
+        <div id="tableBox" class="govuk-grid-column-three-quarters">
+
+            <!-- Add Profile button -->
+            @if (Model.Permissions.CanAddProfile)
+            {
+                <div class="govuk-button-group">
+                    <a data-test-id="AddProfileButton" class="govuk-button" data-module="govuk-button" asp-page="@LafPages.AddProfile.ROUTE">
+                        Add Profile
+                    </a>
+                </div>
+            }
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+            <div class="moj-search">
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-label--s govuk-!-font-weight-bold" for="search-hint">
+                        Find a local authority profile
+                    </label>
+
+                    <div id="search-hint" class="govuk-hint moj-search__hint ">
+
+                        Enter whole or part of the local authority name
+                    </div>
+
+                    <input asp-for="Filter.Filter"
+                           list="laSuggestion"
+                           class="govuk-input moj-search__input" aria-describedby="search-hint"
+                           value="@(Model.Filter.Filter ?? string.Empty)">
+
+                    <datalist id="laSuggestion">
+                        
+                        @foreach (var item in Model.LocalAuthorityNames)
+                        {
+                           <option>@item</option>
+                        }
+
+                    </datalist>
+
+                </div>
+
+                <button asp-page-handler="@LafPages.Profiles.METHOD_APPLY_FILTERS" type="submit" class="govuk-button moj-search__button " data-module="govuk-button">
+                    Filter
+                </button>
+
+                <button asp-page-handler="@LafPages.Profiles.METHOD_CLEAR_FILTERS"
+                        type="submit"
+                        class="govuk-button govuk-button--secondary moj-search__button "
+                        disabled="@string.IsNullOrEmpty(Model.Filter.Filter)">
+                    Clear
+                </button>
+
+                @if (!string.IsNullOrEmpty(Model.Filter.Filter))
+                {
+                    <div class="govuk-inset-text">
+                        @Model.LocalAuthorities.Count results shown.
+                    </div>
+                }
+            </div>
+
+            <!-- Table -->
+            <table class="govuk-table la-flex-font-smaller" aria-label="Local authority profile information">
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Local Authority</th>
+                        <th scope="col" class="govuk-table__header">ONS Code</th>
+                        <th scope="col" class="govuk-table__header">Email</th>
+                        <th scope="col" class="govuk-table__header">Most recent SOI status</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+
+                    @if (Model.LocalAuthorities != null)
+                    {
+                        @foreach (var localAuthority in Model.LocalAuthorities)
+                        {
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    <a data-test-id="ProfileNameLink_@localAuthority.Name"
+                                       asp-page="@LafPages.ProfileV2.ROUTE"
+                                       asp-page-handler="@LafPages.ProfileV2.METHOD_GET_BY_ONS"
+                                       asp-route-onsCode="@localAuthority.OnsCode">
+                                        @localAuthority.Name
+                                    </a>
+                                </td>
+                                <td class="govuk-table__cell">
+                                    @localAuthority.OnsCode
+                                </td>
+                                <td class="govuk-table__cell">
+                                    @localAuthority.Email
+                                </td>
+                                <td class="govuk-table__cell">
+                                    @{
+                                        switch (localAuthority.Status)
+                                        {
+                                            case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.FailedAssessment:
+                                                <strong class="govuk-tag laflex-tag--failedsoichecks govuk-!-static-margin-bottom-1"> Failed Assessment </strong>
+                                                break;
+                                            case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.AwaitingSignOff:
+                                                <strong class="govuk-tag laflex-tag--awaitingsignoff govuk-!-static-margin-bottom-1"> Awaiting Sign Off </strong>
+                                                break;
+                                            case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.PassedAssessment:
+                                                <strong class="govuk-tag laflex-tag--accepted govuk-!-static-margin-bottom-1"> Passed Assessment </strong>
+                                                break;
+                                            case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.Withdrawn:
+                                                <strong class="govuk-tag laflex-tag--withdrawn govuk-!-static-margin-bottom-1"> Withdrawn </strong>
+                                                break;
+                                            case Ofgem.LAF.SharedLibrary.Enums.SoiStatusV2.ToBeAssessed:
+                                                <strong class="govuk-tag govuk-tag--blue govuk-!-static-margin-bottom-1"> To Be Assessed </strong>
+                                                break;
+                                            default:
+                                                <strong class="govuk-tag govuk-tag--grey govuk-!-static-margin-bottom-1"> NO SOI </strong>
+                                                break;
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+
+            @await Html.PartialAsync("_Pagination", Model.Pagination)
+
+        </div>
+    </div>
+
+</form>

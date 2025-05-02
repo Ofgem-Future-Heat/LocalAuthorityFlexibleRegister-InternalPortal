@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+
+@model (bool AddMode, string SelectedLocalAuthorityId,List<Ofgem.LAF.SharedLibrary.Models.LocalAuthority>LocalAuthorities, List<SelectListItem>LaSelectList, List<Ofgem.LAF.SharedLibrary.Models.LocalAuthority>SelectedLocalAuthorities)
+
+<h2 class="govuk-heading-m  govuk-!-margin-bottom-5" id="soi-what-la">What local authority are you submitting on behalf of?</h2>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        @if (Model.LocalAuthorities.Count > 0)
+        {
+            <div class="govuk-form-group">
+                <label class="govuk-label" for="local-authority">
+                    Select local authority:
+                </label>
+
+                <select id="local-authority"
+                        class="govuk-select" style="min-width: 75px!important;"
+                        name="SelectedLa"
+                        asp-items="Model.LaSelectList">
+                </select>
+
+            </div>
+
+            @if (Model.AddMode)
+            {
+                <button type="submit" data-test-id="SelectLaSoi" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.Add.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.Add.METHOD_ADD_IN_LA"
+                        asp-route-localAuthorityId="@Model.SelectedLocalAuthorityId">
+                    Add local authority
+                </button>
+            }
+            else
+            {
+                <button type="submit" data-test-id="SelectLaSoi" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.Edit.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.Edit.METHOD_ADD_IN_LA"
+                        asp-route-localAuthorityId="@Model.SelectedLocalAuthorityId">
+                    Add local authority
+                </button>
+            }
+        }
+    </div>
+
+    <div class="govuk-grid-column-one-half">
+
+        <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m">Local authorities you're submitting on behalf of:</caption>
+            <tbody class="govuk-table__body">
+
+                @foreach (Ofgem.LAF.SharedLibrary.Models.LocalAuthority la in Model.SelectedLocalAuthorities)
+                {
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header" style="font-weight: 100;">@la.Name</th>
+                        <td class="govuk-table__cell">
+                            @if (Model.AddMode)
+                            {
+                                <button type="submit" data-test-id="SelectLaSoi" class="govuk-link buttonAsLink"
+                                        asp-page="@LafPages.SoiV2.Add.ROUTE"
+                                        asp-page-handler="@LafPages.SoiV2.Add.METHOD_TAKE_OUT_LA"
+                                        asp-route-id="@la.LocalAuthorityId">
+                                    Remove
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" data-test-id="SelectLaSoi" class="govuk-link buttonAsLink"
+                                        asp-page="@LafPages.SoiV2.Edit.ROUTE"
+                                        asp-page-handler="@LafPages.SoiV2.Edit.METHOD_TAKE_OUT_LA"
+                                        asp-route-id="@la.LocalAuthorityId">
+                                    Remove
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+

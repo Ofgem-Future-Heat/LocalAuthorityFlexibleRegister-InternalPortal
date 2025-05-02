@@ -1,0 +1,151 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@using Ofgem.LAF.SharedLibrary.Enums
+@using Ofgem.LAF.SharedLibrary.Models
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.StatusSetting
+@{
+    ViewData["Title"] = "SOI Status Setting - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+@if (Model.ShowForm)
+{
+    <a asp-page="@LafPages.SoiV2.EligibilityRoute2Proxy5.ROUTE"
+       asp-page-handler="@LafPages.SoiV2.EligibilityRoute2Proxy5.METHOD_GET_BY_ID"
+       asp-route-statementOfIntentId="@Model.StatementOfIntentId"
+       data-test-id="BackButton"
+       class="govuk-back-link">Back</a>
+}
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+@if (Model.ShowForm)
+{
+    <main class="govuk-main-wrapper " id="main-content" role="main">
+
+        <form method="POST">
+
+            <input asp-for="OnsCode" type="hidden" />
+            <input asp-for="LocalAuthorityId" type="hidden" />
+            <input asp-for="StatementOfIntentId" type="hidden" />
+            <input asp-for="IsLocalAuthorityNamed" type="hidden" />
+            <input asp-for="IsSoiSameAsWebsite" type="hidden" />
+            <input asp-for="HasMostRecentTemplate" type="hidden" />
+            <input asp-for="ForScheme" type="hidden" />
+
+            @if (@Model.IsAutomaticFail)
+            {
+                <input asp-for="SoiStatus" type="hidden" />
+
+                <h1 class="govuk-heading-l">Statement of Intent assessment status set to ‘Failed assessment’</h1>
+
+                <p class="govuk-body">This SOI assessment for @Model.Name, @Model.SoiVersion has failed. This is because you have answered ‘no’ to these questions:</p>
+
+                <ul class="govuk-list govuk-list--number">
+                    <li>
+                        As the local authority has not published the Statement of Intent on the website, this will fail the assessment.
+                    </li>
+                    <li>
+                        As the Statement of Intent does not contain the local authority name, this will fail the assessment.
+                    </li>
+                    <li>
+                        As the Statement of Intent does not contain a published date, this will fail the assessment.
+                    </li>
+                </ul>
+            }
+            else
+            {
+
+                <h1 class="govuk-heading-l">What status do you recommend setting the Statement of Intent to?</h1>
+
+                <!--First question-->
+                <div class="govuk-form-group @(Model.SoiStatusHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                    <fieldset class="govuk-fieldset">
+
+                        @if (Model.SoiStatusHasError)
+                        {
+                            <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                                @(Model.DisplayMessage)
+                            </div>
+                        }
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            @if (Model.Permissions.CanViewValidSoiStatus)
+                            {
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="PassedAssessment" name="SoiStatus" type="radio"
+                                           value="@SoiStatusV2.PassedAssessment"
+                                           asp-for="SoiStatus">
+                                    <label class="govuk-label govuk-radios__label" for="PassedAssessment">
+                                        Passed assessment
+                                    </label>
+                                </div>
+                            }
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="AwaitingSignOff" name="SoiStatus" type="radio"
+                                       value="@SoiStatusV2.AwaitingSignOff"
+                                       asp-for="SoiStatus">
+                                <label class="govuk-label govuk-radios__label" for="AwaitingSignOff">
+                                    Awaiting sign-off
+                                </label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="FailedAssessment" name="SoiStatus" type="radio"
+                                       value="@SoiStatusV2.FailedAssessment"
+                                       asp-for="SoiStatus">
+                                <label class="govuk-label govuk-radios__label" for="FailedAssessment">
+                                    Failed assessment
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            }
+
+
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+
+            <hr class="govuk-section-break govuk-section-break--m">
+            <h1 class="govuk-heading-m"><label name="moreDetail"> Additional information</label></h1>
+
+
+            <!--Comment-->
+            <div class="govuk-form-group">
+
+                <div id="soi-link-hint" class="govuk-hint">
+                    Enter any other important information in relation to the Statement of Intent
+                </div>
+                <textarea class="govuk-textarea" id="AdditionalInformationText" name="AdditionalInformationText" rows="5"
+                          asp-for="@Model.AdditionalInformationText"></textarea>
+            </div>
+
+            <div class="govuk-button-group govuk-!-margin-top-8">
+                @if (Model.Permissions.CanContinue)
+                {
+                    <button type="submit" class="govuk-button" data-module="govuk-button"
+                            asp-page="@LafPages.SoiV2.StatusSetting.ROUTE"
+                            asp-page-handler="@LafPages.SoiV2.StatusSetting.METHOD_SAVE_CONTINUE"
+                            asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                        Continue
+                    </button>
+                }
+
+
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.StatusSetting.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.StatusSetting.METHOD_SAVE_EXIT"
+                        asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                    Save and exit
+                </button>
+            </div>
+
+        </form>
+    </main>
+}

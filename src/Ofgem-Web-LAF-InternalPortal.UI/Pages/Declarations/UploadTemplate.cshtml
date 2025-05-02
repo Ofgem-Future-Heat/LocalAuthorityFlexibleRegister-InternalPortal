@@ -1,0 +1,128 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model UploadTemplateModel
+@{
+    ViewData["Title"] = "Upload declaration notification - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+
+<a data-test-id="BackButton" asp-page="@LafPages.Dashboard.ROUTE" class="govuk-back-link">Back</a>
+
+<form method="POST" enctype="multipart/form-data" onsubmit="disableSubmitButton()">
+
+    @if (Model.HasMessage)
+    {
+        <div class="govuk-notification-banner" role="region"
+             aria-labelledby="govuk-notification-banner-title"
+             data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Information
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p data-test-id="GovukUploadCompletedNotificationText" class="govuk-notification-banner__heading">
+                    @Model.Message
+                </p>
+            </div>
+        </div>
+    }
+
+    <h1 class="govuk-heading-l">Upload declarations</h1>
+    <p class="govuk-body-l">Upload your declarations using the bulk upload CSV template.</p>
+
+    <!-- File upload block  with error messaging  - guide to the component: https://design-system.service.gov.uk/components/file-upload/ -->
+
+    <div class="govuk-form-group @(Model.HasUploadError ? "govuk-form-group--error" : "") ">
+        <label class="govuk-label" for="SelectedUploadFile">
+            Upload a file
+        </label>
+        @if (Model.HasUploadError)
+        {
+            <p data-test-id="file-upload-1-error" id="file-upload-1-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">UploadError:</span>
+                @foreach (var item in Model.UploadErrors)
+                {
+                    <text>@item</text>
+
+                    <br>
+                }
+            </p>
+        }
+        <input class="govuk-file-upload  @(Model.HasUploadError ? "govuk-file-upload--error" : "")"
+               id="SelectedUploadFile"
+               name="SelectedUploadFile"
+               type="file"
+               asp-for="SelectedUploadFile"
+               data-test-id="GovukFileToUpload"
+               aria-describedby="@(Model.HasUploadError ? "file-upload-1-error" : "")" />
+    </div>
+
+    <!-- Details block -->
+    <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+            <span data-test-id="govuk-details__summary-text" class="govuk-details__summary-text">
+                Help getting the latest forms and subsidiary documents
+            </span>
+        </summary>
+        <div class="govuk-details__text">
+            You will need the latest bulk upload template to upload declarations. You can use this file in any spreadsheet application (such as Microsoft Excel, or Google sheets). Just be sure to save the file as CSV file.<br><br>
+            
+            Download the latest 
+            <a href="https://www.ofgem.gov.uk/publications/great-british-insulation-scheme-and-eco4-la-and-supplier-flex-forms-and-subsidiary-documents" 
+               target="_blank"
+               rel="noopener">Declaration Notification template</a>.
+        </div>
+    </details>
+
+    <!-- Submission form -->
+    <div class="@(Model.HasSubmissionNoteError ? "govuk-form-group--error" : "govuk-form-group") ">
+        <h1 class="govuk-label-wrapper">
+            <label class="govuk-label govuk-label--m" for="SubmissionNotes">
+                Submission notes
+            </label>
+        </h1>
+        @if (Model.HasSubmissionNoteError)
+        {
+            <p id="submission-note-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> @Model.SubmissionNotesError
+            </p>
+        }
+        <div id="SubmissionNotes-hint" class="govuk-hint">
+            Insert any notes that might help you process these declarations. You will see this note appended to every declaration you import.
+        </div>
+        <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="200">
+            <textarea class="@(Model.HasSubmissionNoteError ? "govuk-textarea--error govuk-js-character-count" : "govuk-textarea govuk-js-character-count")"
+                      asp-for="@Model.SubmissionNotes"
+                      rows="10"
+                      style="width: 100%;"
+                      aria-describedby="SubmissionNotes-hint"
+                      data-test-id="GovukSubmissionTextArea"></textarea>
+            <div id="SubmissionNotes-info" class="govuk-hint govuk-character-count__message">
+                You can enter up to 200 characters
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Permissions!.CanSaveAndContinue)
+    {
+        <!-- Continue button -->
+        <button id="SaveAndContinue" data-test-id="SaveAndContinue" class="govuk-button" data-module="govuk-button" type="submit">
+            Save and continue
+        </button>
+    }
+</form>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        //
+        // disable submit Button after click to prevent duplicate data entry
+        //
+        function disableSubmitButton() {
+            document.getElementById("SaveAndContinue").disabled = true;
+        }
+    </script>
+}

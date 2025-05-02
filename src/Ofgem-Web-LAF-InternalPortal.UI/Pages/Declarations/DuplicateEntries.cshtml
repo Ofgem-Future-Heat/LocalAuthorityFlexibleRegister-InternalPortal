@@ -1,0 +1,135 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem.LAF.SharedLibrary.Enums
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model DuplicateEntriesModel
+@{
+    ViewData["Title"] = "Duplicate entry - LA Flex - Ofgem";
+}
+
+<style>
+    tr.seperator > td,
+    tr.seperator > th {
+        border-bottom: 1px dashed lightgray;
+    }
+</style>
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+
+<a data-test-id="BackButton" asp-page="@LafPages.UploadTemplate.ROUTE" class="govuk-back-link">Back</a>
+
+<form method="POST">
+
+    <main class="govuk-main-wrapper " id="duplicate-entries-main-content" role="main">
+
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-l" data-test-id="duplicationText">
+                    @if (Model.DuplicateData.Duplicates?.Count == 1)
+                    {
+                        <text>
+                            There is 1 declaration already in the register
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            There are @Model.DuplicateData.Duplicates?.Count declarations already in the register
+                        </text>
+                    }
+                </h1>
+
+                <p class="govuk-body-l">
+                    Select 'Supersede and continue' to upload the entire CSV file.
+                </p>
+                <p class="govuk-body-l">
+                    Select 'Continue with non-duplicates ONLY' to disregard declarations below.
+                </p>
+                <p class="govuk-body-l">
+                    Select 'Cancel' to go back to the dashboard without making any changes.
+                </p>
+
+                <table class="govuk-table" aria-label="Duplicate declaration entries found within the uploaded file">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" data-test-id="URNText" class="govuk-table__header">URN</th>
+                            <th scope="col" data-test-id="AddressText" class="govuk-table__header">Address</th>
+                            <th scope="col" data-test-id="UploadedDateText" class="govuk-table__header">Uploaded</th>
+                            <th scope="col" data-test-id="StatusText" class="govuk-table__header">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        @if (Model.DuplicateData.Duplicates != null && Model.DuplicateData.Duplicates.Any())
+                        {
+                            @foreach (var item in Model.DuplicateData.Duplicates)
+                            {
+                                <tr class="govuk-table__row">
+                                    <th scope="row" data-test-id="URNValue" class="govuk-table__cell noborderbottom">@item.Urn</th>
+                                    <td data-test-id="AddressValue" class="govuk-table__cell noborderbottom">@item.AddressLine1 @item.AddressLine2</td>
+                                    <td data-test-id="UploadedDateValue" class="govuk-table__cell noborderbottom">-</td>
+                                    <td data-test-id="StatusValue" class="govuk-table__cell noborderbottom">Row @item.RowNumber of CSV</td>
+                                </tr>
+                                <tr class="govuk-table__row seperator">
+                                    <th scope="row" data-test-id="DuplicateURNValue" class="govuk-table__cell noborderbottom">@item.DatabaseEntry?.Urn</th>
+                                    <td data-test-id="DuplicateAddressValue" class="govuk-table__cell noborderbottom">@item.DatabaseEntry?.AddressLine1 @item.DatabaseEntry?.AddressLine2</td>
+                                    <td data-test-id="DuplicateUploadedDateValue" class="govuk-table__cell noborderbottom">@item.DatabaseEntry?.CreatedDate.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATE_ONLY_FORMAT)</td>
+                                    <td data-test-id="DuplicateStatusValue" class="govuk-table__cell noborderbottom">
+                                        @{
+                                            switch (item.DatabaseEntry?.DbStatus)
+                                            {
+                                                case DeclarationStatus.FailedCoreChecks:
+                                                    <strong class="govuk-tag laflex-tag--failedcorechecks"> Failed Core checks </strong>
+                                                    break;
+
+                                                case DeclarationStatus.FailedSoiChecks:
+                                                    <strong class="govuk-tag laflex-tag--failedsoichecks"> Failed SOI Checks </strong>
+                                                    break;
+
+                                                case DeclarationStatus.AwaitingSignOff:
+                                                    <strong class="govuk-tag laflex-tag--awaitingsignoff"> Awaiting SignOff </strong>
+                                                    break;
+
+                                                case DeclarationStatus.Accepted:
+                                                    <strong class="govuk-tag laflex-tag--accepted"> Accepted </strong>
+                                                    break;
+
+                                                case DeclarationStatus.Rejected:
+                                                    <strong class="govuk-tag laflex-tag--rejected"> Not Accepted </strong>
+                                                    break;
+
+                                                case DeclarationStatus.Withdrawn:
+                                                    <strong class="govuk-tag laflex-tag--withdrawn"> Withdrawn </strong>
+                                                    break;
+
+                                                default:
+                                                    <strong class="govuk-tag laflex-tag--unknown"> Unknown </strong>
+                                                    break;
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                </table>
+
+                @if (Model.Permissions.CanSaveAndContinue)
+                {
+                    <div class="govuk-button-group">
+                        <input data-test-id="btnSuperceedandContinue" type="submit" class="govuk-button" asp-page-handler="@LafPages.DuplicateEntries.METHOD_DUPLICATE_SAVE_AND_CONTINUE" value="Supersede and continue" />
+                        <input data-test-id="btnContinuewithNonDuplicates" type="submit" class="govuk-button" asp-page-handler="@LafPages.DuplicateEntries.METHOD_SAVE_AND_CONTINUE_IGNORE_DUPLICATES" value="Continue with non-duplicates ONLY" />
+                        <input data-test-id="btnCancelUpload" type="submit" class="govuk-button govuk-button--secondary" asp-page-handler="@LafPages.DuplicateEntries.METHOD_POST_DUPLICATE_CANCEL" value="Cancel upload" />
+                    </div>
+                }
+
+                <div>
+                    @Model.Message
+                </div>
+            </div>
+        </div>
+    </main>
+</form>

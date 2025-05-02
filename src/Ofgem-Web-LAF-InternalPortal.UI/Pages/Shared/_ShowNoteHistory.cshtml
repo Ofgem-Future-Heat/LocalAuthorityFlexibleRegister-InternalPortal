@@ -1,0 +1,44 @@
+﻿@page
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Models.Declaration
+@{
+    Ofgem_Web_LAF_InternalPortal.Models.Declaration declaration = ViewBag.Declaration;
+    <details class="govuk-details govuk-!-padding-bottom-5" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+            <span data-test-id="SubmissionNotesHistoryLink" class="govuk-details__summary-text">
+                Notes history
+            </span>
+        </summary>
+
+        @for (var note = 1; note < declaration.DeclarationNotes!.Count; note++)
+        {
+            <div class="govuk-details__text no-border-left govuk-!-padding-left-0">
+                <div class="laflex-notes-details">
+                    <div class="laflex-notes-date-name govuk-!-static-padding-bottom-2">
+                        <p class="govuk-!-display-inline govuk-body govuk-!-font-weight-bold">@declaration.DeclarationNotes[note].CreatedDate?.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_MONTH_FORMAT, CultureInfo.CreateSpecificCulture("en-GB"))</p>
+                        <p class="govuk-!-text-align-right govuk-!-display-inline govuk-body govuk-!-font-weight-bold" style="float: right;">Updated by: @declaration.DeclarationNotes[note].CreatedByName</p>
+                    </div>
+                    <p class="govuk-body" style="overflow-wrap: break-word">@declaration.DeclarationNotes[note].Text</p>
+                    @if (ViewBag.IncludeDeleteButton)
+                    {
+                        <p class="govuk-!-font-size-14 ">
+                            @if (ViewBag.CanDeleteNote)
+                            {
+                                <a type="submit"
+                                   asp-page="@LafPages.DeclarationDetail.ROUTE"
+                                   asp-page-handler="@LafPages.DeclarationDetail.METHOD_DELETE_DECLARATION_NOTE"
+                                   asp-route-declarationId="@declaration.DeclarationNotes[note].DeclarationId"
+                                   asp-route-declarationNoteId="@declaration.DeclarationNotes[note].DeclarationNoteId"
+                                   onclick="return confirm('Are you sure you want to delete this note')">Delete</a>
+                            }
+                        </p>
+                    }
+                </div>
+            </div>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        }
+
+    </details>
+}

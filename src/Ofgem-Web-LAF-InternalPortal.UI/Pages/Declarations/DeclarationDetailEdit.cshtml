@@ -1,0 +1,75 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model DeclarationDetailEditModel
+
+@{
+    ViewData["Title"] = "Edit Declaration Detail - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+
+<a asp-page="@LafPages.DeclarationDetail.ROUTE"
+   asp-page-handler="@LafPages.DeclarationDetail.METHOD_GET_WITH_ID_ACTION"
+   asp-route-declarationId="@Model.Declaration!.DeclarationId"
+   data-test-id="BackButton"
+   class="govuk-back-link">Back</a>
+
+@if (Model.Declaration != null)
+{
+
+    <form method="POST">
+        
+        <!-- Error summary  -->
+        @if (!Model.FirstTimeNoShowError && Model.Declaration.DeclarationErrors is { Count: > 0 })
+        {
+            <div class="govuk-error-summary" data-module="govuk-error-summary">
+                <div role="alert">
+                    <h2 data-test-id="CoreCheckText" class="govuk-error-summary__title">
+                        Error:
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul data-test-id="CoreCheckValue" class="govuk-list govuk-error-summary__list laflex-error-list">
+
+                            @foreach (var item in Model.Declaration.DeclarationErrors!)
+                            {
+                                <li>
+                                    <a href="#id_@(item.DeclarationErrorId)">@item.Message</a>
+                                </li>
+                            }
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+        <span class="govuk-caption-l" data-test-id="DeclarationDetailText">Edit Declaration details for</span>
+        <h1 class="govuk-heading-l" data-test-id="DeclarationUrnValue">@Model.Declaration?.Urn</h1>
+
+        @await Html.PartialAsync("Shared/_DeclarationDetailEdit", Model)
+
+        <div class="govuk-button-group">
+
+            @if (Model.Permissions.CanSubmit)
+            {
+                <button data-test-id="GovukEditAssessmentDetailButton"
+                        class="govuk-button govuk-button" data-module="govuk-button"
+                        asp-page="@LafPages.DeclarationDetailEdit.ROUTE"
+                        asp-page-handler="@LafPages.DeclarationDetailEdit.METHOD_VALIDATE"
+                        asp-route-declarationId="@Model.Declaration!.DeclarationId">
+                    Submit
+                </button>
+            }
+
+            <a asp-page="@LafPages.DeclarationDetail.ROUTE"
+               asp-page-handler="@LafPages.DeclarationDetail.METHOD_GET_WITH_ID_ACTION"
+               asp-route-declarationId="@Model.Declaration!.DeclarationId"
+               class="govuk-button govuk-button--secondary">Cancel</a>
+
+        </div>
+
+    </form>
+}

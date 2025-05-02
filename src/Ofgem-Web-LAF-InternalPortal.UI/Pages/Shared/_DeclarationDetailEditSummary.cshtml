@@ -1,0 +1,98 @@
+﻿@model Ofgem_Web_LAF_InternalPortal.Pages.Declarations.DeclarationDetailEditSummaryModel
+
+
+@if (Model.Declaration != null)
+{
+    <input type="hidden" asp-for="@Model.Declaration.DeclarationId" />
+    <input type="hidden" asp-for="@Model.Declaration.Urn" />
+    <input type="hidden" asp-for="@Model.Declaration.AddressLine1" />
+    <input type="hidden" asp-for="@Model.Declaration.AddressLine2" />
+    <input type="hidden" asp-for="@Model.Declaration.PostCode" />
+
+    <input type="hidden" asp-for="@Model.Declaration.ReferralMadeOutsideOfLAsRemit" />
+    <input type="hidden" asp-for="@Model.Declaration.ECO4orGreatBritishInsulationSchemeFlexReferralRoute" />
+    <input type="hidden" asp-for="@Model.Declaration.Route2Proxies" />
+    <input type="hidden" asp-for="@Model.Declaration.AdditionalRoute2Proxies" />
+    <input type="hidden" asp-for="@Model.Declaration.Route4ApplicationNumber" />
+    <input type="hidden" asp-for="@Model.Declaration.LAAreaCode" />
+    <input type="hidden" asp-for="@Model.Declaration.DateOfHouseholderEligibility" />
+    <input type="hidden" asp-for="@Model.Declaration.LocalAuthority" />
+    <input type="hidden" asp-for="@Model.Declaration.LAWasConsultedPriorToInstallationCompletion" />
+    <input type="hidden" asp-for="@Model.Declaration.DateOfStatementOfIntentPublication" />
+    <input type="hidden" asp-for="@Model.Declaration.StatementOfIntentLink" />
+    <input type="hidden" asp-for="@Model.Declaration.StatementOfIntentPublishedFor" />
+
+    @await Html.PartialAsync("_DeclarationDetailAddress", (Model.Declaration.AddressLine1, Model.Declaration.AddressLine2, Model.Declaration.PostCode, Model.DeclarationErrorFields))
+
+    <!-- Referral details section  -->
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table">
+                <caption class="govuk-table__caption govuk-table__caption--m">Referral details</caption>
+                <tbody class="govuk-table__body">
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="LARemitText" scope="row" class="govuk-table__header govuk-!-width-one-half">Referral made outside of LA's remit</th>
+                        <td data-test-id="LARemitValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.ReferralMadeOutsideOfLAsRemit</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="ReferralRoutText" scope="row" class="govuk-table__header govuk-!-width-one-half">ECO4/GBIS Flex referral route</th>
+                        <td data-test-id="ReferralRoutValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.ECO4orGreatBritishInsulationSchemeFlexReferralRoute</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="Rout2ProxiesRoute3UmbrellaText" scope="row" class="govuk-table__header govuk-!-width-one-half ">Route 2 proxies / route 3 umbrella</th>
+                        <td data-test-id="Rout2ProxiesRoute3UmbrellaValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.Route2Proxies</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="Rout2ProxiesText" scope="row" class="govuk-table__header govuk-!-width-one-half">Additional route 2 proxies</th>
+                        <td data-test-id="Rout2ProxiesValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.AdditionalRoute2Proxies</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="Rout4ApplicationNumberText" scope="row" class="govuk-table__header govuk-!-width-one-half">Route 4 application number</th>
+                        <td data-test-id="Rout4ApplicationNumberValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.Route4ApplicationNumber</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="LAAreaCodeText" scope="row" class="govuk-table__header govuk-!-width-one-half">LA area code</th>
+                        <td data-test-id="LAAreaCodeValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.LAAreaCode</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="DOHouseholderEligibilityText" scope="row" class="govuk-table__header govuk-!-width-one-half">Date of householder eligibility</th>
+                        <td data-test-id="DOHouseholderEligibilityValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.DateOfHouseholderEligibilityForView</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="LocalAuthorityText" scope="row" class="govuk-table__header govuk-!-width-one-half">Local authority</th>
+                        <td data-test-id="LocalAuthorityValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.LocalAuthority</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="WasLocalAuthorityConsultedText" scope="row" class="govuk-table__header govuk-!-width-one-half ">Was local authority consulted prior to installation?</th>
+                        <td data-test-id="WasLocalAuthorityConsultedValue" class="govuk-table__cell  govuk-!-width-one-half"> @Model.Declaration.LAWasConsultedPriorToInstallationCompletion </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="SoIPublicationDateText" scope="row" class="govuk-table__header govuk-!-width-one-half ">SoI publication date</th>
+                        <td data-test-id="SoIPublicationDateValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.DateOfStatementOfIntentPublicationForView</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="SoILinkText" scope="row" class="govuk-table__header govuk-!-width-one-half ">SoI link</th>
+                        <td data-test-id="SoILinkValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.StatementOfIntentLink</td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="PublishedForText" scope="row" class="govuk-table__header govuk-!-width-one-half ">Published for</th>
+                        <td data-test-id="PublishedForValue" class="govuk-table__cell govuk-!-width-one-half">@Model.Declaration.StatementOfIntentPublishedFor</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
