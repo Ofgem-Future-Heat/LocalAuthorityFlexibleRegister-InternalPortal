@@ -1,0 +1,42 @@
+﻿@model Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus
+
+@{
+    switch (Model)
+    {
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.FailedCoreChecks:
+            <strong class="govuk-tag laflex-tag--failedcorechecks"> FAILED Core CHECKS </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.FailedSoiChecks:
+            <strong class="govuk-tag laflex-tag--failedsoichecks"> FAILED SOI CHECKS </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.AwaitingSignOff:
+            <strong class="govuk-tag laflex-tag--awaitingsignoff"> AWAITING SIGN-OFF </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.Accepted:
+            <strong class="govuk-tag laflex-tag--accepted"> ACCEPTED </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.Rejected:
+            <strong class="govuk-tag laflex-tag--rejected"> NOT ACCEPTED </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.OnHold:
+            <strong class="govuk-tag laflex-tag--onhold"> ON HOLD </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.Withdrawn:
+            <strong class="govuk-tag laflex-tag--withdrawn"> WITHDRAWN </strong>
+            break;
+
+        case Ofgem.LAF.SharedLibrary.Enums.DeclarationStatus.NotSet:
+            <strong class="govuk-tag laflex-tag--unknown"> UNKNOWN </strong>
+            break;
+
+        default:
+            <strong class="govuk-tag laflex-tag--unknown"> UNKNOWN </strong>
+            break;
+    }
+}

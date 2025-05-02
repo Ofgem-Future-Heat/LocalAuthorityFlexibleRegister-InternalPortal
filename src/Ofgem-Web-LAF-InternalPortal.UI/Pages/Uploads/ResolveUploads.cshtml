@@ -1,0 +1,87 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model ResolveUploadsModel
+
+@{
+    ViewData["Title"] = "Resolve failed uploads - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+<a data-test-id="BackButton" asp-page="@LafPages.Dashboard.ROUTE" class="govuk-back-link">Back</a>
+<br />
+
+@if (Model.ShowNotification)
+{
+    <div class="govuk-notification-banner" role="region"
+         aria-labelledby="govuk-notification-banner-title"
+         data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Information
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            @if (Model.HasDisplayMessage)
+            {
+                <p class="govuk-notification-banner__heading">@Model.DisplayMessage</p>
+            }
+        </div>
+    </div>
+}
+
+<form method="POST">
+
+
+    <main class="govuk-main-wrapper " id="main-content" role="main">
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-l">
+                    Resolve failed uploads
+                </h1>
+
+                <p class="govuk-body-m">These files could not successfully be uploaded. Choose whether you want to resolve the upload, or delete the file from the system.</p>
+
+                <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m" style="display: none;">Outstanding files</caption>
+
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">Filename</th>
+                            <td class="govuk-table__cell govuk-table__header">Uploaded by</td>
+                            <td class="govuk-table__cell govuk-table__header">Date added</td>
+                            <td class="govuk-table__cell govuk-table__header">Action</td>
+                        </tr>
+                        @for (int uploadAwaitingCounter = 0; uploadAwaitingCounter < Model.UploadsAwaitingDecision?.Count; uploadAwaitingCounter++)
+                        {
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">@Model.UploadsAwaitingDecision[uploadAwaitingCounter].DocumentId.Split("_")[1]</td>
+                                <td class="govuk-table__cell">@Model.UploadsAwaitingDecision[uploadAwaitingCounter].CreatedByName</td>
+                                <td class="govuk-table__cell">@(Model.UploadsAwaitingDecision[uploadAwaitingCounter].CreatedDate?.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_UPLOADED))</td>
+                                <td class="govuk-table__cell">
+                                    <a class="govuk-link govuk-body-s"
+                                       asp-page-handler="@LafPages.Dashboard.METHOD_RESOLVE_UPLOAD_WAITING"
+                                       asp-route-uploadId="@Model.UploadsAwaitingDecision[uploadAwaitingCounter].UploadId">Resolve</a>
+                                    <a class="govuk-link govuk-body-s la-flex-error-red govuk-!-static-margin-left-2"
+                                       asp-page-handler="@LafPages.Dashboard.METHOD_DELETE_UPLOAD"
+                                       asp-route-uploadId="@Model.UploadsAwaitingDecision[uploadAwaitingCounter].UploadId">Delete </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="govuk-button-group">
+                    <a asp-page="@LafPages.Dashboard.ROUTE" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</form>

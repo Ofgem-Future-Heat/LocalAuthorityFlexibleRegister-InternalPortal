@@ -1,0 +1,159 @@
+﻿@page
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Add
+
+@{
+    ViewData["Title"] = "New SOI";
+}
+
+<body onload="setFocus()">
+    <input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+    <a asp-page="@LafPages.ProfileV2.ROUTE"
+       asp-page-handler="@LafPages.ProfileV2.METHOD_GET_BY_ONS"
+       asp-route-onsCode="@Model.OnsCode" class="govuk-back-link">Back</a>
+
+    <!-- Error summary  -->
+    @if (Model.HasMessage)
+    {
+        @await Html.PartialAsync("_ShowErrorSummary", Model.DisplayPageErrors)
+    }
+
+    <main class="govuk-main-wrapper " id="add-soi-main-content" role="main">
+        <form method="POST">
+
+            <input asp-for="OnsCode" type="hidden" />
+            <input asp-for="LocalAuthorityId" type="hidden" />
+            <input asp-for="StatementOfIntentId" type="hidden" />
+            <input asp-for="Name" type="hidden" />
+            <input type="checkbox"
+                   name="CanSubmitOnBehalfOfOtherAuthorities"
+                   id="CanSubmitOnBehalfOfOtherAuthorities"
+                   value="true"
+                   style="appearance: none"
+            @(Model.CanSubmitOnBehalfOfOtherAuthorities ? "checked=checked" : "") />
+            <input type="hidden" asp-for="IsSignOffResponsiblePersonSigned" title="IsSignOffResponsiblePersonSigned" />
+            <input type="hidden" asp-for="IsSignOffLaOfficerResponsibleStatement" title="IsSignOffLaOfficerResponsibleStatement" />
+
+            <span class="govuk-caption-l">Add Statement of Intent version for</span>
+            <h1 class="govuk-heading-l">@Model.Name</h1>
+
+            <div class="govuk-form-group @(Model.SoiVersionHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m" for="SoiVersion">
+                    <h1 class="govuk-fieldset__heading">
+                        SOI version number
+                    </h1>
+                </legend>
+
+                <div id="SoiVersionHint" class="govuk-hint  govuk-!-width-two-thirds">
+                    This must match the version published on the local authority website
+                </div>
+
+                @if (Model.SoiVersionHasError)
+                {
+                    <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                        @Model.GetSoiVersionErrorMessage
+                    </div>
+                }
+
+                <input class="govuk-input govuk-input--width-10 @(Model.SoiVersionHasError ? "govuk-input--error" : "")" id="SoiVersion" name="SoiVersion" type="text"
+                       asp-for="SoiVersion">
+            </div>
+
+            <div>
+                @await Html.PartialAsync("Shared/_ThreePartDateNullable", Model.DatePublishedNullableControl)
+            </div>
+
+            <div class="govuk-form-group @(Model.SoiLinkHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m" for="SoiLink">
+                    <h2 class="govuk-fieldset__heading">
+                        Link to SOI on local authority website
+                    </h2>
+                </legend>
+                <div id="soi-link-hint" class="govuk-hint">
+                    This is where the Statement of Intent is saved on the local authority website
+                </div>
+
+                @if (Model.SoiLinkHasError)
+                {
+                    <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                        @Model.GetSoiLinkErrorMessage
+                    </div>
+                }
+
+                <input class="govuk-input govuk-input--width-30 @(Model.SoiLinkHasError ? "govuk-input--error" : "")"
+                       id="SoiLink" name="SoiLink" type="text"
+                       aria-describedby="soi-link-hint"
+                       asp-for="SoiLink">
+            </div>
+
+            <div class="govuk-form-group @(Model.SelectLaHasError ? "govuk-form-group--error govuk-input--error input-validation-error" : "")">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                        <h1 class="govuk-fieldset__heading">
+                            Is the local authority submitting this SOI on behalf of another local authority?
+                        </h1>
+                    </legend>
+
+                    @if (Model.SelectLaHasError)
+                    {
+                        <div class="govuk-error-message la-flex-error-red  govuk-!-margin-top-1">
+                            @Model.GetSelectLaErrorMessage
+                        </div>
+                    }
+
+                    <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                        <div class="govuk-radios__item">
+                            <button id="canSubmitOnBehalfOff"
+                                    class="govuk-radios__input"
+                                    type="submit"
+                                    asp-page="@LafPages.SoiV2.Add.ROUTE"
+                                    asp-page-handler="@LafPages.SoiV2.Add.METHOD_CAN_SUBMIT_ON_BEHALF_OF"></button>
+                            <label class="govuk-label govuk-radios__label @(Model.CanSubmitOnBehalfOfOtherAuthorities ? "makeMeDisplayAsRadioButton" : "")" for="canSubmitOnBehalfOff">
+                                Yes
+                            </label>
+                        </div>
+                        <div class="govuk-radios__item">
+                            <button id="cannotSubmitOnBehalfOff"
+                                    class="govuk-radios__input"
+                                    type="submit"
+                                    asp-page="@LafPages.SoiV2.Add.ROUTE"
+                                    asp-page-handler="@LafPages.SoiV2.Add.METHOD_CANNOT_SUBMIT_ON_BEHALF_OF"></button>
+                            <label class="govuk-label govuk-radios__label @(Model.CanSubmitOnBehalfOfOtherAuthorities ? "" : "makeMeDisplayAsRadioButton")" for="cannotSubmitOnBehalfOff">
+                                No
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            @if (Model.CanSubmitOnBehalfOfOtherAuthorities)
+            {
+                @await Html.PartialAsync("Shared/_SoiV2DesignatedLas", (true, Model.SelectedLocalAuthorityId, Model.LocalAuthorities, Model.LaSelectList, Model.SelectedLocalAuthorities))
+            }
+
+            <div class="govuk-button-group govuk-!-static-margin-top-9">
+
+                <button data-test-id="CreateSoiButton" type="submit" class="govuk-button" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.Add.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.Add.METHOD_ADD">
+                    Save and continue
+                </button>
+
+                <a class="govuk-link"
+                   asp-page="@LafPages.ProfileV2.ROUTE"
+                   asp-page-handler="@LafPages.ProfileV2.METHOD_GET_BY_ONS"
+                   asp-route-onsCode="@Model.OnsCode">Cancel</a>
+            </div>
+        </form>
+    </main>
+</body>
+
+@section scripts {
+    <script type="text/javascript">
+        function setFocus() {
+            document.getElementById('@Model.FocusControlId').focus();
+        }
+    </script>
+}

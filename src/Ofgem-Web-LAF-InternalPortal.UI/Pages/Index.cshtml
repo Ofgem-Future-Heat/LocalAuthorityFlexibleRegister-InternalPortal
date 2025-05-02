@@ -1,0 +1,33 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+
+    Layout = "_Layout_for_start";
+}
+
+<form method="POST" id="loginForm" data-no-timeout="true">
+    <div class="text-center">
+        <div class="govuk-panel govuk-panel--information">
+            <h1 class="govuk-panel__title">
+                Welcome to LA Flex internal
+            </h1>
+            <p>Use this service to process declarations from local authorities.</p>
+            <p><strong>For Ofgem staff use only</strong></p>
+        </div>
+
+        <div class="govuk-button-group">
+            <button data-test-id="" type="submit" id="continue" class="govuk-button" formnovalidate="" data-module="govuk-button" data-prevent-double-click="true">Log into service
+                <svg class="govuk-button__start-icon govuk-!-display-none-print" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" focusable="false" aria-hidden="true"><path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"></path></svg>
+            </button>
+        </div>
+        <div>
+            @Model.Message
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
+        @await Html.PartialAsync("Shared/_Announcements", Model.PublishedAnnouncements)
+
+    </div>
+</form>

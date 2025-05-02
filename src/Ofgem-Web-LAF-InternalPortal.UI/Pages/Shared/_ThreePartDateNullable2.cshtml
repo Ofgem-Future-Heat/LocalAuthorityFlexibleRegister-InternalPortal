@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Ofgem_Web_LAF_InternalPortal.Models.ThreePartDateNullable2
+
+<div class="govuk-form-group @(Model is { HasError2: true, ShowTheHighlightBar2: true } ? "govuk-form-group--error" : "") ">
+
+    <input type="hidden" asp-for="@Model.Title2" />
+    <input type="hidden" asp-for="@Model.TitleToBeUsedInErrorMessage2" />
+    <input type="hidden" asp-for="@Model.FirstHint2" />
+    <input type="hidden" asp-for="@Model.SecondHint2" />
+    <input type="hidden" asp-for="@Model.ShowTheHighlightBar2" />
+
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="threepartdate-issued-hint threepartdate-issued-error">
+        @if (!string.IsNullOrEmpty(Model.Title2))
+        {
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <label class="govuk-label govuk-label--m">
+                    @Model.Title2
+                </label>
+            </legend>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.FirstHint2))
+        {
+            <div id="threepartdate-firsthint" class="govuk-hint">
+                <span class="govuk-hint">@Model.FirstHint2</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.SecondHint2))
+        {
+            <div id="threepartdate-secondhint" class="govuk-hint">
+                <span class="govuk-hint">@Model.SecondHint2</span>
+            </div>
+        }
+
+        @if (Model.HasError2)
+        {
+            <p id="threepartdate-issued-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden"></span>@Model.ErrorMessage2
+            </p>
+        }
+
+        <div class="govuk-date-input" id="threepartdate-issued">
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="day">
+                        Day
+                    </label>
+                    <input asp-for="@Model.Day2"
+                           class="govuk-input govuk-date-input__input govuk-input--width-2  @(Model.HasDay2Error ? "govuk-input--error" : "")"
+                           id="day"
+                           type="number"
+                           maxLength="2"/>
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="month">
+                        Month
+                    </label>
+                    <input asp-for="@Model.Month2"
+                           class="govuk-input govuk-date-input__input govuk-input--width-2 @(Model.HasMonth2Error ? "govuk-input--error" : "")"
+                           id="month"
+                           type="number"
+                           maxLength="2"/>
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="year">
+                        Year
+                    </label>
+                    <input asp-for="@Model.Year2"
+                           class="govuk-input govuk-date-input__input govuk-input--width-3 @(Model.HasYear2Error ? "govuk-input--error" : "")"
+                           id="year"
+                           type="number"
+                           maxLength="4"/>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+

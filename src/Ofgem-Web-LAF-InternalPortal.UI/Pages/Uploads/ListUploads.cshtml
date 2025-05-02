@@ -1,0 +1,168 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem.LAF.SharedLibrary.Enums
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model ListUploadsModel
+
+@{
+    ViewData["Title"] = "Logs - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.UPLOAD_LOG)" />
+
+<br />
+
+<a asp-page="@LafPages.Logs.ROUTE" class="govuk-back-link">Back</a>
+
+@if (Model.ShowNotification)
+{
+    <div class="govuk-notification-banner" role="region"
+         aria-labelledby="govuk-notification-banner-title"
+         data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Information
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            @if (Model.HasDisplayMessage)
+            {
+                <p class="govuk-notification-banner__heading">@Model.DisplayMessage</p>
+            }
+        </div>
+    </div>
+}
+
+<form method="POST">
+
+
+    <main class="govuk-main-wrapper " id="list-uploads-main-content" role="main">
+
+        <h1 class="govuk-heading-l">Upload log</h1>
+
+
+        <table class="govuk-table" aria-label="Bulk declaration uploads and the result counts">
+
+
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+
+                    <th scope="col" class="govuk-table__header">Added/Upload ID</th>
+
+                    <th scope="col" class="govuk-table__header">Who</th>
+
+                    <th scope="col" class="govuk-table__header">State</th>
+
+                    <th scope="col" class="govuk-table__header">Local authority</th>
+
+                    <th scope="col" class=" govuk-table__header govuk-!-width-one-quarter">Comments</th>
+
+                </tr>
+            </thead>
+
+            <tbody class="govuk-table__body">
+                @if (Model.Uploads != null)
+                {
+                    @foreach (var upload in Model.Uploads)
+                    {
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">
+                                @if (upload.When != null)
+                                {
+                                    @upload.When.Value.ToString("hh:mm tt")
+                                    <span> on </span>
+                                    <br />
+                                    @upload.When.Value.ToString("dd/MM/yyyy")
+                                    <br />
+                                    <span class="govuk-body-s">@upload.UploadId</span>
+                                }
+                            </td>
+                            <td class="govuk-table__cell" style="white-space: normal !important;">
+                                @upload.Who
+                            </td>
+                            <td class="govuk-table__cell">
+                                @switch (upload.State)
+                                {
+                                    case UploadStatus.ProcessingComplete:
+                                        if (upload.HasErrors)
+                                        {
+                                            <span>Contains errors</span>
+                                            @if (Model.Permissions.CanDownLoadErrors)
+                                            {
+                                                <br />
+                                                <a asp-page="@LafPages.UploadLog.ROUTE"
+                                                   asp-page-handler="@LafPages.UploadLog.METHOD_DOWNLOAD_ERRORS"
+                                                   asp-route-uploadId="@upload.UploadId"
+                                                   asp-route-localAuthority="@upload.LocalAuthority">
+                                                    Download errors
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>Successful upload</span>
+                                        }
+
+                                        break;
+                                    case UploadStatus.ProcessingCompleteOverwriteDuplicates:
+                                        @if (upload.HasErrors)
+                                        {
+                                            <span>With superseded</span>
+                                            @if (Model.Permissions.CanDownLoadErrors)
+                                            {
+                                                <br />
+                                                <a asp-page="@LafPages.UploadLog.ROUTE"
+                                                   asp-page-handler="@LafPages.UploadLog.METHOD_DOWNLOAD_ERRORS"
+                                                   asp-route-uploadId="@upload.UploadId"
+                                                   asp-route-localAuthority="@upload.LocalAuthority">
+                                                    Download errors
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>With superseded</span>
+                                        }
+                                        break;
+                                    case UploadStatus.ProcessingCompleteIgnoreDuplicates:
+
+                                        @if (upload.HasErrors)
+                                        {
+                                            <span>Not superseded</span>
+                                            @if (Model.Permissions.CanDownLoadErrors)
+                                            {
+                                                <br />
+                                                <a asp-page="@LafPages.UploadLog.ROUTE"
+                                                   asp-page-handler="@LafPages.UploadLog.METHOD_DOWNLOAD_ERRORS"
+                                                   asp-route-uploadId="@upload.UploadId"
+                                                   asp-route-localAuthority="@upload.LocalAuthority">
+                                                    Download errors
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>Not superseded</span>
+                                        }
+                                        break;
+                                    case UploadStatus.FileHasDuplicates:
+                                        <span>Awaiting a decision to overwrite duplicates</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="govuk-table__cell" style="white-space: normal !important;">
+                                @upload.LocalAuthority
+                            </td>
+                            <td class="govuk-table__cell" style="white-space: normal !important;">
+                                @Html.Raw(@upload.Comments)
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </main>
+
+    @await Html.PartialAsync("_Pagination", Model.Pagination)
+
+</form>

@@ -1,0 +1,64 @@
+﻿@page
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.Withdraw
+
+@{
+    ViewData["Title"] = "Initial assessment checklist - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+<a asp-page="@LafPages.SoiV2.Edit.ROUTE"
+   asp-page-handler="@LafPages.SoiV2.Edit.METHOD_GET_BY_ONS"
+   asp-route-onsCode="@Model.OnsCode"
+   asp-route-version="@Model.SoiVersion"
+   asp-route-publishedDate="@Model.DatePublished.ToString("yyyyMMdd")"
+   data-test-id="BackButton" class="govuk-back-link">Back</a>
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+<main class="govuk-main-wrapper " id="edit-soi-main-content" role="main">
+
+    <form method="POST">
+        <input asp-for="OnsCode" type="hidden" />
+        <input asp-for="LocalAuthorityId" type="hidden" />
+        <input asp-for="LocalAuthorityName" type="hidden" />
+        <input asp-for="StatementOfIntentId" type="hidden" />
+
+        <h1 class="govuk-heading-l">Withdraw Assessment for @Model.LocalAuthority?.Name - @Model.SoiVersion</h1>
+
+        <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                <span class="govuk-visually-hidden">Warning</span>
+                If you withdraw this SoI assessment, you will be unable to process any related declaration notifications, and their status will change to 'Failed SOI checks'.
+                <br />
+                The SOI will be removed from the platform.
+            </strong>
+        </div>
+
+        <div class="govuk-button-group govuk-!-margin-top-8">
+            @if (Model.Permissions.CanWithdraw)
+            {
+                <button type="submit" class="govuk-button" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.Withdraw.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.Withdraw.METHOD_WITHDRAW"
+                        asp-route-statementOfIntentId="@Model.StatementOfIntentId"
+                        asp-route-localAuthorityName="@Model.LocalAuthorityName"
+                        asp-route-version="@Model.SoiVersion">
+                    Withdraw assessment
+                </button>
+            }
+
+            <a asp-page="@LafPages.SoiV2.Dashboard.ROUTE"
+               class="govuk-button govuk-button--secondary"
+               data-module="govuk-button">
+                Cancel
+            </a>
+
+        </div>
+    </form>
+</main>

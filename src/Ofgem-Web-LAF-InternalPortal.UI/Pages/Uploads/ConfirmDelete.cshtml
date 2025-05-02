@@ -1,0 +1,79 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model ConfirmDeleteModel
+
+@{
+    ViewData["Title"] = "Confirm delete - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.DASHBOARD)" />
+<a data-test-id="BackButton" asp-page="@LafPages.ResolveUploads.ROUTE" class="govuk-back-link">Back</a>
+<br />
+
+@if (Model.ShowNotification)
+{
+    <div class="govuk-notification-banner" role="region"
+         aria-labelledby="govuk-notification-banner-title"
+         data-module="govuk-notification-banner">
+        <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                Information
+            </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+            @if (Model.HasDisplayMessage)
+            {
+                <p class="govuk-notification-banner__heading">@Model.DisplayMessage</p>
+            }
+        </div>
+    </div>
+}
+
+<form method="POST">
+    <main class="govuk-main-wrapper " id="main-content" role="main">
+          
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-l">
+                    Are you sure you want to delete this file?
+                </h1>
+                <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--l" style="display: none;">Are you sure you want to delete this file?</caption>
+    
+                    <tbody class="govuk-table__body">
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">Filename</th>
+                        <td class="govuk-table__cell govuk-table__header">Uploaded by</td>
+                        <td class="govuk-table__cell govuk-table__header">Date added</td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Model.Upload.DocumentId?.Split("_")[1]</td>
+                            <td class="govuk-table__cell">@Model.Upload.CreatedByName</td>
+                            <td class="govuk-table__cell">@Model.Upload.CreatedDate?.ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_UPLOADED)</td>
+                    </tr>
+    
+                    </tbody>
+                </table>
+                
+                @if (Model.Permissions.CanDelete)
+                {
+                    <div class="govuk-button-group">
+                        <a asp-page="@LafPages.Dashboard.ROUTE" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                            Cancel
+                        </a>
+                        <a role="button" draggable="false"
+                           class="govuk-button govuk-button--warning"
+                           data-module="govuk-button"
+                           asp-page="@LafPages.DeleteUpload.ROUTE"
+                           asp-page-handler="@LafPages.DeleteUpload.METHOD_DELETE_UPLOAD"
+                           asp-route-uploadId="@Model.Upload.UploadId">
+                            Yes, I am sure
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+</form>

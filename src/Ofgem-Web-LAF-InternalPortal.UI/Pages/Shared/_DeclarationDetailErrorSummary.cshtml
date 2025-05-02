@@ -1,0 +1,28 @@
+﻿@model Models.Declaration
+
+@if (Model != null)
+{
+    <!-- Error summary  -->
+    @if (Model.DeclarationErrors is { Count: > 0 })
+    {
+        <div class="govuk-error-summary" data-module="govuk-error-summary">
+            <div role="alert">
+                <h2 data-test-id="CoreCheckText" class="govuk-error-summary__title">
+                    Error:
+                </h2>
+                <div class="govuk-error-summary__body">
+                    <ol data-test-id="CoreCheckValue" class="govuk-list govuk-error-summary__list">
+
+                        @foreach (var item in Model.DeclarationErrors!)
+                        {
+                            <li>
+                                @item.Message
+                            </li>
+                        }
+
+                    </ol>
+                </div>
+            </div>
+        </div>
+    }
+}

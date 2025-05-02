@@ -1,0 +1,111 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@using Ofgem.LAF.SharedLibrary.Enums
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.Confirmation
+@{
+}
+
+
+<!--panel-->
+@switch (Model.SoiStatus)
+{
+    case SoiStatusV2.FailedAssessment:
+        <div class="govuk-notification-banner " role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Assessment result
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <h3 class="govuk-notification-banner__heading">
+                    You have set the Statement of Intent status as:
+                </h3>
+                <p class="govuk-body"></p><div class="govuk-!-margin-top-3">
+                    <strong class="govuk-tag govuk-tag--red govuk-!-padding-2">
+                        FAILED ASSESSMENT
+                    </strong>
+                </div>
+            </div>
+        </div>
+        break;
+
+
+    case SoiStatusV2.AwaitingSignOff:
+        <div class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Assessment result
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <h3 class="govuk-notification-banner__heading">
+                    You have set the Statement of Intent status as:
+                </h3>
+                <p class="govuk-body"></p><div class="govuk-!-margin-top-3">
+                    <strong class="govuk-tag govuk-tag--yellow govuk-!-padding-2">
+                        AWAITING SIGN-OFF
+                    </strong>
+                </div>
+            </div>
+        </div>
+        break;
+
+
+    case SoiStatusV2.PassedAssessment:
+        <div class="govuk-panel govuk-panel--confirmation">
+            <h1 class="govuk-panel__title">
+                Assessment result
+            </h1>
+            <div class="govuk-panel__body">
+                You have set the SOI status to
+                <div class="govuk-!-margin-top-3">
+                    <strong class="govuk-tag--green govuk-!-padding-2 ">PASSED ASSESSMENT</strong>
+                </div>
+            </div>
+        </div>
+        break;
+
+    default:
+        <div class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                    Unexpected Assessment result
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <h3 class="govuk-notification-banner__heading">
+                    The Statement of Intent status is:
+                </h3>
+                <p class="govuk-body"></p><div class="govuk-!-margin-top-3">
+                    <strong class="govuk-tag govuk-tag--yellow govuk-!-padding-2">
+                        @Model.SoiStatus
+                    </strong>
+                </div>
+            </div>
+        </div>
+        break;
+}
+
+
+<hr class="govuk-section-break govuk-section-break--m ">
+
+<h2 class="govuk-heading-l">What happens next</h2>
+<p class="govuk-body">The local authority will be told about the result of the Statement of Intent assessment via email and in the external digital platform.</p>
+
+<p class="govuk-body">There are no further actions to take for either Ofgem of the local authority.</p>
+
+<!--Button-->
+<div class="govuk-button-group govuk-!-margin-top-8">
+    <a  class="govuk-button" data-module="govuk-button"
+            asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+            asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+            asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+        View Statement of intent summary
+    </a>
+    @* 
+    
+    <a type="submit" class="govuk-button" data-module="govuk-button" href="../soi-profile/index">
+        View Statement of intent summary
+    </a> *@
+</div>

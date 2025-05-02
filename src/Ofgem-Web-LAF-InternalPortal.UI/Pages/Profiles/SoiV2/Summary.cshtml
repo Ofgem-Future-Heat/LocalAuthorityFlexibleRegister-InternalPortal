@@ -1,0 +1,387 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.SoiSummary
+
+@{
+    ViewData["Title"] = "Assessment summary";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+@if (Model.ShowForm)
+{
+    <a asp-page="@LafPages.SoiV2.StatusSetting.ROUTE"
+       asp-page-handler="@LafPages.SoiV2.StatusSetting.METHOD_GET_BY_ID"
+       asp-route-statementOfIntentId="@Model.StatementOfIntentId"
+       class="govuk-back-link">Back</a>
+}
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+
+@if (Model.ShowForm)
+{
+    <form method="POST">
+        <input asp-for="LocalAuthorityName" type="hidden" />
+        <input asp-for="OnsCode" type="hidden" />
+        <input asp-for="SoiStatus" type="hidden" />
+        <input asp-for="StatementOfIntentId" type="hidden" />
+
+
+        <h1 class="govuk-heading-l">Assessment summary for @Model.LocalAuthorityName</h1>
+
+        <!--soi details-->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">Statement of Intent details</h2>
+                <div class="govuk-summary-card__actions">
+
+                    @if (Model.Permissions.CanChange)
+                    {
+                        <a class="govuk-link"
+                           asp-page="@LafPages.SoiV2.Edit.ROUTE"
+                           asp-route-onsCode="@Model.OnsCode"
+                           asp-route-version="@Model.SoiVersion"
+                           asp-route-publishedDate="@Model.DatePublished.ToString("yyyyMMdd")">
+                            Change<span class="govuk-visually-hidden"> Change Statement of Intent details</span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            SOI version number
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.SoiVersion
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Date added
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.DatePublished.ToString("dd/MM/yyyy")
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Link to SOI
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @if (!string.IsNullOrEmpty(Model.StatementOfIntentLink))
+                            {
+                                <a href="@Model.StatementOfIntentLink" target="_blank">@Model.StatementOfIntentLink</a>
+                            }
+                            else
+                            {
+                                <span>"Missing entry"</span>
+                            }
+
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Submitting for other local authority
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.CanSubmitOnBehalfOfOtherAuthorities ? "Yes" : "No")
+                        </dd>
+                    </div>
+
+                    @if (Model.CanSubmitOnBehalfOfOtherAuthorities)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Local authorities covered
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+
+                                @if (Model.DesignatedLas is null || !Model.DesignatedLas.Any())
+                                {
+                                    <span>"Missing entries"</span>
+                                }
+                                else
+                                {
+                                    @foreach (var la in Model.DesignatedLas)
+                                    {
+                                        <span>@la.LocalAuthority?.Name</span>
+                                        <br />
+                                    }
+                                }
+
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <!--checklist-->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">Initial assessment checklist</h2>
+                <div class="govuk-summary-card__actions">
+
+                    @if (Model.Permissions.CanChange)
+                    {
+                        <a class="govuk-link"
+                           asp-page="@LafPages.SoiV2.InitialAssessmentChecklist.ROUTE"
+                           asp-page-handler="@LafPages.SoiV2.InitialAssessmentChecklist.METHOD_GET_BY_ID"
+                           asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                            Change<span class="govuk-visually-hidden"> Change Statement of Intent details</span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Does the Statement of Intent name the relevant local authority?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsLocalAuthorityNamed.HasValue
+                                ? (bool)Model.IsLocalAuthorityNamed ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Does the Statement of Intent name a delegate authority?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsDelegatedAuthorityNamed.HasValue
+                                ? (bool)Model.IsDelegatedAuthorityNamed ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Same Statement of Intent published on the local
+                            authority website?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsSoiSameAsWebsite.HasValue
+                                ? (bool)Model.IsSoiSameAsWebsite ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Most recent SOI template used?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.HasMostRecentTemplate.HasValue
+                                ? (bool)Model.HasMostRecentTemplate ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Are previous SOI versions clearly displayed as
+                            withdrawn/redacted?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsPreviousVersionStatusClear.HasValue
+                                ? (bool)Model.IsPreviousVersionStatusClear ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Scheme details checklist-->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">Scheme details checklist</h2>
+                <div class="govuk-summary-card__actions">
+
+                    @if (Model.Permissions.CanChange)
+                    {
+                        <a class="govuk-link"
+                           asp-page="@LafPages.SoiV2.SchemeChecklist.ROUTE"
+                           asp-page-handler="@LafPages.SoiV2.SchemeChecklist.METHOD_GET_BY_ID"
+                           asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                            Change<span class="govuk-visually-hidden"> Change Statement of Intent details</span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Scheme indicated on the SOI that the local authority will administer?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.ForScheme
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            SOI published date correct?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsPublishedDateCorrect.HasValue
+                                ? (bool)Model.IsPublishedDateCorrect ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            SOI indicates that proxy 5 is being used as part
+                            of referral route 2?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsProxy5SchemePresent.HasValue
+                                ? (bool)Model.IsProxy5SchemePresent ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Eligibility Route2 Proxy5 checklist-->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">Eligibility for Route 2 Proxy 5</h2>
+                <div class="govuk-summary-card__actions">
+
+                    @if (Model.Permissions.CanChange)
+                    {
+                        <a class="govuk-link"
+                           asp-page="@LafPages.SoiV2.EligibilityRoute2Proxy5.ROUTE"
+                           asp-page-handler="@LafPages.SoiV2.EligibilityRoute2Proxy5.METHOD_GET_BY_ID"
+                           asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                            Change<span class="govuk-visually-hidden"> Change scheme details</span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Does the local authority name and describe the scheme in the SOI?
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.IsProxy5SchemePresent.HasValue
+                                ? (bool)Model.IsProxy5SchemePresent ? "Yes" : "No"
+                                : "Missing entry")
+                        </dd>
+                    </div>
+
+                    @if (Model.IsProxy5SchemePresent is not null &&
+                   (bool)Model.IsProxy5SchemePresent)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Does the description adhere to NICE Guideline NG6,
+                                Recommendation 2?
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @(Model.IsDescriptionNiceNg6Recommendation2.HasValue
+                                    ? (bool)Model.IsDescriptionNiceNg6Recommendation2 ? "Yes" : "No"
+                                    : "Missing entry")
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <!-- Status and add info -->
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">Recommended SOI status and additional comments</h2>
+                <div class="govuk-summary-card__actions">
+
+                    @if (Model.Permissions.CanChange)
+                    {
+                        <a class="govuk-link"
+                           asp-page="@LafPages.SoiV2.StatusSetting.ROUTE"
+                           asp-page-handler="@LafPages.SoiV2.StatusSetting.METHOD_GET_BY_ID"
+                           asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                            Change<span class="govuk-visually-hidden"> Change Recommended SOI status and additional comments</span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Status set to
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @await Html.PartialAsync("_StatementOfIntentStatus", Model.SoiStatus)
+
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Additional information
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @Model.AdditionalInformationText
+
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!--Button-->
+        <div class="govuk-button-group govuk-!-static-margin-top-9">
+            @if (Model.Permissions.CanChange)
+            {
+                <button data-test-id="SaveButton" type="submit" class="govuk-button" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.SoiSummary.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.SoiSummary.METHOD_SAVE">
+                    Save and continue
+                </button>
+            }
+
+
+            <button data-test-id="CancelLinkButton" class="govuk-link buttonAsLink "
+                    asp-page="@LafPages.SoiV2.SoiSummary.ROUTE"
+                    asp-page-handler="@LafPages.SoiV2.SoiSummary.METHOD_CANCEL"
+                    asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+                Cancel
+            </button>
+
+        </div>
+    </form>
+}

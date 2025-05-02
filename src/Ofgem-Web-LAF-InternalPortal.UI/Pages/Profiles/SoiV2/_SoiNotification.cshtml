@@ -1,0 +1,20 @@
+﻿ @model Tuple<bool,string>
+
+ <div class="govuk-error-summary" data-module="govuk-error-summary">
+     <div role="alert">
+         <h2 data-test-id="CoreCheckText" class="govuk-error-summary__title">
+             There is a problem
+         </h2>
+         
+         <div class="govuk-error-summary__body">
+             <ul class="govuk-list govuk-error-summary__list">
+                 <li>
+                     @if (Model.Item1)
+                     {
+                        <a href="#">@Model.Item2</a>
+                     }
+                 </li>
+             </ul>
+         </div>
+     </div>
+ </div>

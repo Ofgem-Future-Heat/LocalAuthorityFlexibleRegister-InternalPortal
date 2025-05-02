@@ -1,0 +1,113 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Profiles.SoiV2.EditDesignatedLasModel
+@{
+    ViewData["Title"] = "Edit Designated LAs";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+<a asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+   asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+   asp-route-statementOfIntentId="@Model.StatementOfIntentId" class="govuk-back-link">Back</a>
+
+@if (Model.ShowNotification)
+{
+    @await Html.PartialAsync("_SoiNotification", Tuple.Create(Model.HasDisplayMessage, Model.DisplayMessage))
+}
+
+<main class="govuk-main-wrapper " id="edit-la-main-content" role="main">
+    <form method="POST">
+
+        <input asp-for="OnsCode" type="hidden" />
+        <input asp-for="LocalAuthorityId" type="hidden" />
+        <input asp-for="StatementOfIntentId" type="hidden" />
+        <input asp-for="Name" type="hidden" />
+        <input asp-for="SoiVersion" type="hidden" />
+        <input asp-for="DatePublished" type="hidden" />
+        <input asp-for="SoiStatus" type="hidden" />
+        <input asp-for="CanSubmitOnBehalfOfOtherAuthorities" type="hidden" />
+        
+        <span class="govuk-caption-l">Edit Statement of Intent (SOI) details for</span>
+        <h1 class="govuk-heading-l">@Model.Name</h1>
+
+
+        <hr class="govuk-section-break govuk-section-break--m ">
+        <h2 class="govuk-heading-m  govuk-!-margin-bottom-5" id="soi-what-la">What local authority are you submitting on behalf of?</h2>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+                @if (Model.LocalAuthorities.Count > 0)
+                {
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="local-authority">
+                            Select local authority:
+                        </label>
+
+                        <select id="local-authority"
+                                class="govuk-select" style="min-width: 75px!important;"
+                                name="SelectedLa"
+                                asp-items="Model.LaSelectList">
+                        </select>
+
+                    </div>
+                    <button type="submit" data-test-id="SelectLaSoi" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                            asp-page="@LafPages.SoiV2.EditDesignatedLas.ROUTE"
+                            asp-page-handler="@LafPages.SoiV2.EditDesignatedLas.METHOD_ADD_IN_LA"
+                            asp-route-localAuthorityId="@Model.SelectedLocalAuthorityId">
+                        Add local authority
+                    </button>
+                }
+            </div>
+
+            <div class="govuk-grid-column-one-half">
+
+                <table class="govuk-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m">Local authorities you're submitting on behalf of:</caption>
+                    <tbody class="govuk-table__body">
+
+
+                        @for (int i = Model.SelectedLocalAuthorities.Count - 1; i >= 0; i--)
+                        {
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header" style="font-weight: 100;">@Model.SelectedLocalAuthorities[i].Name</th>
+                                <td class="govuk-table__cell">
+                                    @if (@Model.SelectedLocalAuthorities[i].IsEditable)
+                                    {
+                                        <button type="submit" data-test-id="SelectLaSoi" class="govuk-link buttonAsLink"
+                                                asp-page="@LafPages.SoiV2.EditDesignatedLas.ROUTE"
+                                                asp-page-handler="@LafPages.SoiV2.EditDesignatedLas.METHOD_TAKE_OUT_LA"
+                                                asp-route-id="@Model.SelectedLocalAuthorities[i].LocalAuthorityId">
+                                            Remove
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+
+        <div class="govuk-button-group govuk-!-margin-top-8">
+
+            @if (Model.Permissions.CanUpdate)
+            {
+                <button data-test-id="AddLaButton" type="submit" class="govuk-button" data-module="govuk-button"
+                        asp-page="@LafPages.SoiV2.EditDesignatedLas.ROUTE"
+                        asp-page-handler="@LafPages.SoiV2.EditDesignatedLas.METHOD_UPDATE_LA">
+                    Update
+                </button>
+            }
+
+            <a class="govuk-link"
+               asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+               asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+               asp-route-statementOfIntentId="@Model.StatementOfIntentId">Cancel</a>
+
+        </div>
+    </form>
+</main>

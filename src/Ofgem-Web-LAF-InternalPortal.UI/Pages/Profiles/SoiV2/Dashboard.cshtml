@@ -1,0 +1,221 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Dashboard
+@{
+    ViewData["Title"] = "Statement of Intent dashboard - LA Flex - Ofgem";
+
+    Layout = "_Layout_for_dashboard";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+<br />
+
+
+<h1 class="govuk-heading-l">Statements of Intent</h1>
+
+<form method="POST">
+
+    <!-- Filter action buttons -->
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div>
+                <button id="showAndHideButton" class="govuk-button govuk-button--secondary" data-module="govuk-button" type="button" onclick="ShowOrHide()">Hide filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <!-- Filter box -->
+        <div class="govuk-grid-column-one-quarter" id="filterBox">
+
+            <div class="laflex-filter">
+                <div class="laflex-filter-header">
+                    <div class="laflex-filter-header-title">
+                        <h2 class="govuk-heading-m">Filter</h2>
+                    </div>
+                </div>
+            </div>
+            <!-- Filter contents -->
+            <div class="la-flex-filter-content ">
+                <div class="laflex-filter-options">
+
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="Filter_LocalAuthority">
+                            Search for a local authority
+                        </label>
+
+                        <div id="search-hint" class="govuk-hint moj-search__hint ">
+                            Enter a search term
+                        </div>
+                        <div>
+                            <input asp-for="Filter.LocalAuthority" class="govuk-input" type="text" />
+                        </div>
+
+                    </div>
+
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                SOI status
+                            </legend>
+                            <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+
+                                <div class="govuk-checkboxes__item">
+
+                                    <input asp-for="Filter.IsToBeAssessed" class="govuk-checkboxes__input" type="checkbox">
+
+                                    <label class="govuk-label govuk-checkboxes__label" for="Filter_IsToBeAssessed">
+                                        To be assessed
+                                    </label>
+                                    <input id="Filter_IsToBeAssessed" name="Filter_IsToBeAssessed" type="hidden" value="true">
+                                </div>
+
+                                <div class="govuk-checkboxes__item">
+
+                                    <input asp-for="Filter.IsFailedAssessment" class="govuk-checkboxes__input" type="checkbox">
+
+                                    <label class="govuk-label govuk-checkboxes__label" for="Filter_IsFailedAssessment">
+                                        Failed assessment
+                                    </label>
+                                    <input id="Filter_IsFailedAssessment" name="Filter_IsFailedAssessment" type="hidden" value="true">
+                                </div>
+
+                                <div class="govuk-checkboxes__item">
+
+                                    <input asp-for="Filter.IsAwaitingSignOff" class="govuk-checkboxes__input" type="checkbox">
+
+                                    <label class="govuk-label govuk-checkboxes__label" for="Filter_IsAwaitingSignOff">
+                                        Awaiting sign-off
+                                    </label>
+                                    <input id="Filter_IsAwaitingSignOff" name="Filter_IsAwaitingSignOff" type="hidden" value="true">
+                                </div>
+
+                                <div class="govuk-checkboxes__item">
+
+                                    <input asp-for="Filter.IsPassedAssessment" class="govuk-checkboxes__input" type="checkbox">
+
+                                    <label class="govuk-label govuk-checkboxes__label" for="Filter_IsPassedAssessment">
+                                        Passed assessment
+                                    </label>
+                                    <input id="Filter_IsPassedAssessment" name="Filter_IsPassedAssessment" type="hidden" value="true">
+                                </div>
+
+                            </div>
+                        </fieldset>
+
+                    </div>
+
+                    <button type="submit" class="govuk-button govuk-!-margin-right-2" data-module="govuk-button"
+                            asp-page-handler="@LafPages.SoiV2.Dashboard.METHOD_APPLY_FILTERS">
+                        Search
+                    </button>
+                    <button type="submit" class="govuk-button  govuk-button--secondary" data-module="govuk-button"
+                            asp-page-handler="@LafPages.SoiV2.Dashboard.METHOD_CLEAR_FILTERS">
+                        Clear
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Results Area -->
+        <div class="govuk-grid-column-three-quarters" id="tableBox">
+
+            <table class="govuk-table la-flex-font-smaller">
+
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header "></th>
+                        <th scope="col" class="govuk-table__header">Local authority name</th>
+                        <th scope="col" class="govuk-table__header ">SOI version number</th>
+                        <th scope="col" class="govuk-table__header">Date published</th>
+                        <th scope="col" class="govuk-table__header">SOI status</th>
+                        <th scope="col" class="govuk-table__header">Action</th>
+
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+
+                    @if (Model.StatementOfIntents != null)
+                    {
+                        @for (var index = 0; index < Model.StatementOfIntents.Count; index++)
+                        {
+
+                            <tr class="govuk-table__row">
+
+                                <!-- Row 1 -->
+                                <th scope="row" class="govuk-table__header"></th>
+                                <td class="govuk-table__cell allowWrapping">
+                                    <a data-test-id="ProfileNameLink_@Model.StatementOfIntents[index].LocalAuthority" 
+                                       asp-page="@LafPages.ProfileV2.ROUTE"
+                                       asp-page-handler="@LafPages.ProfileV2.METHOD_GET_BY_ONS"
+                                       asp-route-onsCode="@Model.StatementOfIntents[index].BaseLaOnsCode"
+                                       asp-route-versionNumber="@Model.StatementOfIntents[index].VersionNumber"
+                                       asp-route-publishedDate="@Model.StatementOfIntents[index].DateAdded.Value.ToString("yyyyMMdd")">@Model.StatementOfIntents[index].LocalAuthority</a>
+                                    @{
+                                        var designatedLAs = Model.StatementOfIntents[index].DesignatedLAs;
+                                    }
+                                    @if (designatedLAs != null && designatedLAs.Count > 0)
+                                    {
+                                        @foreach (var la in designatedLAs)
+                                        {
+                                            @(", " + la.LocalAuthorityName)
+                                        }
+                                    }
+                                </td>
+                                <td class="govuk-table__cell">@Model.StatementOfIntents[index].VersionNumber</td>
+                                <td class="govuk-table__cell">@Model.StatementOfIntents[index].DisplayCreatedDate</td>
+
+                                <td class="govuk-table__cell">
+                                    @await Html.PartialAsync("_StatementOfIntentStatus", Model.StatementOfIntents[index].SoiStatus)
+                                </td>
+                                <td class="govuk-table__cell">
+                                    <a asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+                                       asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+                                       asp-route-statementOfIntentId=@Model.StatementOfIntents[index].StatementOfIntentId>
+                                        View
+                                        <span class="govuk-visually-hidden">Statement of Intent Summary</span>
+                                    </a>
+                                </td>
+                            </tr>
+
+                        }
+                    }
+                </tbody>
+            </table>
+
+            @await Html.PartialAsync("_Pagination", Model.Pagination)
+
+
+
+        </div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script>
+        //
+        // Show/Hide element based upon its visibility
+        //
+        function ShowOrHide() {
+            let buttonElement = document.getElementById("showAndHideButton");
+            let targetFilterElement = document.getElementById("filterBox");
+            let targetTableElement = document.getElementById("tableBox");
+
+            if (targetFilterElement.style.display === "none") {
+                targetFilterElement.style.display = "block";
+                targetTableElement.classList.add("govuk-grid-column-three-quarters");
+                buttonElement.textContent = "Hide Filter"
+            } else {
+                targetFilterElement.style.display = "none";
+                targetTableElement.classList.remove("govuk-grid-column-three-quarters");
+                buttonElement.textContent = "Show Filter"
+            }
+        }
+    </script>
+}

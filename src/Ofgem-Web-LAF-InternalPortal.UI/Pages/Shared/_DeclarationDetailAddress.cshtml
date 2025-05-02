@@ -1,0 +1,24 @@
+﻿@model (string? AddressLine1, string? AddressLine2, string? PostCode, Ofgem_Web_LAF_InternalPortal.Models.DeclarationErrorFields DeclarationErrorFields)
+
+<!-- Address section  -->
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <table class="govuk-table">
+            <caption class="govuk-table__caption govuk-table__caption--m">Property details</caption>
+            <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                    <th data-test-id="AddressLine1Text" scope="row" class="govuk-table__header govuk-!-width-one-half @(Model.DeclarationErrorFields.AddressLine1 ?"govuk-form-group--error laf-table-error" :"")">Address line 1</th>
+                    <td data-test-id="AddressLine1Value" class="govuk-table__cell">@Model.AddressLine1</td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th data-test-id="AddressLine2Text" scope="row" class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.AddressLine2 ?"govuk-form-group--error laf-table-error" :"")">Address line 2</th>
+                    <td data-test-id="AddressLine2Value" class="govuk-table__cell">@Model.AddressLine2</td>
+                </tr>
+                <tr class="govuk-table__row">
+                    <th data-test-id="PostCodeText" scope="row" class="govuk-table__header govuk-!-width-one-half @(Model.DeclarationErrorFields.PostCode ?"govuk-form-group--error laf-table-error" :"")">Postcode</th>
+                    <td data-test-id="PostCodeValue" class="govuk-table__cell">@Model.PostCode</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

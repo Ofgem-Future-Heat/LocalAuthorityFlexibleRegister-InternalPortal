@@ -1,0 +1,36 @@
+﻿@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Models.Declaration
+
+@if (Model != null)
+{
+    <!-- Assessment details  -->
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table">
+                <caption class="govuk-table__caption govuk-table__caption--m">Assessment details</caption>
+                <tbody class="govuk-table__body">
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="CreatedDateText" scope="row" class="govuk-table__header govuk-!-width-one-half">Uploaded</th>
+                    <td data-test-id="CreatedDateValue" class="govuk-table__cell govuk-!-width-one-half">@(((DateTime)Model.CreatedDate!).ToString(Ofgem.LAF.SharedLibrary.Constants.DatetimeFormat.DATETIME_FORMAT))</td>
+                </tr>
+                
+                <tr class="govuk-table__row">
+                    <th data-test-id="MatchingText" scope="row" class="govuk-table__header govuk-!-width-one-half">Matching</th>
+                    <td data-test-id="MatchingValue" class="govuk-table__cell govuk-!-width-one-half">@(Model.Matched.GetDescription())</td>
+                </tr>
+
+                <tr class="govuk-table__row">
+                    <th data-test-id="DeclarationStatusText" scope="row" class="govuk-table__header govuk-!-width-one-half">Assessment status</th>
+                    <td data-test-id="DeclarationStatusValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                        @await Html.PartialAsync("_DeclarationStatus", Model.Status)
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

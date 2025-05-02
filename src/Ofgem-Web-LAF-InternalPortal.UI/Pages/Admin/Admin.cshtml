@@ -1,0 +1,47 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+
+@model AdminModel
+
+@{
+    ViewData["Title"] = "Announcements - LA Flex - Ofgem";
+}
+
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.ADMIN)" />
+
+<br />
+
+<form method="POST" method="post" enctype="multipart/form-data">
+    <main class="govuk-main-wrapper " id="admin-main-content" role="main">
+
+        <h1 class="govuk-heading-l">
+            Admin
+        </h1>
+        <p class="govuk-body-l ">Write and manage announcements for users on the start page</p>
+
+        @if (Model.Permissions.CanAddAnnouncement)
+        {
+            <h2 class="govuk-heading-m">Add new announcements</h2>
+
+            <a data-test-id="WriteAnnouncement" 
+               class="govuk-button" 
+               data-module="govuk-button"
+               asp-page="@LafPages.AnnouncementAdd.ROUTE">
+                Write an announcement
+            </a>
+
+        }
+
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+        <h2 class="govuk-heading-m govuk-!-static-margin-bottom-6">Manage announcements</h2>
+
+        <partial name="Shared/_Announcement" model="Model.PublishedAnnouncements" />
+
+        <partial name="Shared/_Announcement" model="Model.ScheduledToPublishAnnouncements" />
+
+        <partial name="Shared/_Announcement" model="Model.UnPublishedAnnouncements" />
+
+    </main>
+</form>

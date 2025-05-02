@@ -1,0 +1,34 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model WithdrawnConfirmation
+@{
+    ViewData["Title"] = "Soi withdrawn confirmation";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.SOI_DASHBOARD)" />
+
+
+<main class="govuk-main-wrapper " id="main-content" role="main">
+    
+    <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+            Assessment withdrawn
+        </h1>
+        <div class="govuk-panel__body">
+            for <strong>@Model.LocalAuthorityName - SOI @Model.Version</strong> 
+        </div>
+    </div>
+
+    <div class="govuk-button-group govuk-!-margin-top-8">
+
+        <a role="button" draggable="false" class="govuk-button" data-module="govuk-button"
+           asp-page="@LafPages.SoiV2.SoiDetails.ROUTE"
+           asp-page-handler="@LafPages.SoiV2.SoiDetails.METHOD_GET_BY_ID"
+           asp-route-statementOfIntentId="@Model.StatementOfIntentId">
+            Return to Statement of Intent details for @Model.LocalAuthorityName
+        </a>
+
+    </div>
+
+</main>

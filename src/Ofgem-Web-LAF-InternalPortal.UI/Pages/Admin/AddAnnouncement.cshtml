@@ -1,0 +1,188 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Ofgem_Web_LAF_InternalPortal.Extensions
+@model Ofgem_Web_LAF_InternalPortal.Pages.Admin.AddAnnouncementModel
+
+@{
+    ViewData["Title"] = "Add Announcement - LA Flex - Ofgem";
+}
+
+<input id="menuToSelect" type="hidden" value="@(LafPageMenus.ADMIN)" />
+
+<a data-test-id="BackButton" asp-page="@LafPages.Admin.ROUTE" class="govuk-back-link">Back</a>
+
+<br />
+
+<!-- Error summary  -->
+@if (Model.HasMessage)
+{
+    @await Html.PartialAsync("Shared/_AnnouncementDetailErrors", Model.DisplayPageErrors)
+}
+
+<form method="POST">
+
+    <main class="govuk-main-wrapper " id="add-announcement-main-content" role="main">
+
+
+        @* @await Html.PartialAsync("Shared/_AnnouncementDetail", (true, Model.AnnouncementViewModel, Model.SchedulePublishedControl, Model.ScheduledUnPublishedControl, Model.PageLevelError, Model.Message, Model.Permissions.CanPublishAndContinue)) *@
+
+
+        <h1 class="govuk-heading-l"> Write an announcement </h1>
+        <p class="govuk-body-l govuk-!-static-margin-bottom-9">To be published immediately, or to be scheduled in the future. </p>
+
+        <div class="govuk-form-group @(Model.AnnouncementViewModel.HeadlineError ? "govuk-form-group--error" : "")">
+            <label class="govuk-label" for="headline">
+                <strong>Headline</strong>
+            </label>
+
+            @if (Model.AnnouncementViewModel.HeadlineError)
+            {
+                <p class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>@Model.GetHeadlineErrorMessage
+                </p>
+            }
+
+            <input class="govuk-input govuk-!-width-two-thirds govuk-label--s @(Model.AnnouncementViewModel.HeadlineError ? "govuk-input--error" : "")"
+                id="headline" type="text" asp-for="AnnouncementViewModel.Headline">
+        </div>
+
+        <div class="govuk-form-group @(Model.AnnouncementViewModel.BodyError ? "govuk-form-group--error" : "")">
+            <label class="govuk-label" for="text">
+                <strong>Body</strong>
+            </label>
+
+            @if (Model.AnnouncementViewModel.BodyError)
+            {
+                <p class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span>@Model.GetBodyErrorMessage
+                </p>
+            }
+
+            <textarea class="govuk-textarea govuk-!-width-two-thirds  govuk-!-static-margin-bottom-9 @(Model.AnnouncementViewModel.BodyError ? "govuk-input--error" : "")"
+                      id="text" rows="10" asp-for="AnnouncementViewModel.Text"></textarea>
+        </div>
+
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset">
+
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                    Publish now or in the future
+                </legend>
+
+                <input type="hidden"
+                       asp-for="AnnouncementViewModel.PublishNow"
+                       value="@Model.AnnouncementViewModel.PublishNow" />
+
+                <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <button id="publishedNow"
+                                class="govuk-radios__input"
+                                type="submit"
+                                asp-page="@LafPages.AnnouncementAdd.ROUTE"
+                                asp-page-handler="@LafPages.AnnouncementAdd.METHOD_PUBLISHED_NOW"></button>
+                        <label class="govuk-label govuk-radios__label @(Model.AnnouncementViewModel.PublishNow ? "makeMeDisplayAsRadioButton" : "")" for="publishedNow">
+                            Publish now
+                        </label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <button id="schedulePublishedTime"
+                                class="govuk-radios__input"
+                                type="submit"
+                                asp-page="@LafPages.AnnouncementAdd.ROUTE"
+                                asp-page-handler="@LafPages.AnnouncementAdd.METHOD_SCHEDULED_TO_PUBLISH"></button>
+                        <label class="govuk-label govuk-radios__label @(Model.AnnouncementViewModel.PublishNow ? "" : "makeMeDisplayAsRadioButton")" for="schedulePublishedTime">
+                            Schedule a date
+                        </label>
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+
+        @if (!Model.AnnouncementViewModel.PublishNow)
+        {
+            <div class="govuk-form-group @(Model.AnnouncementViewModel.PublishedDateError ? "govuk-form-group--error" : "")" id="publishAtContainer">
+                <label class="govuk-label govuk-label--s" for="AnnouncementViewModel_PublishedDate">
+                    Publish at
+                </label>
+
+                <div>
+                    @await Html.PartialAsync("Shared/_ThreePartDateNullable", Model.SchedulePublishedNullableControl)
+                </div>
+
+            </div>
+        }
+
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible govuk-!-width-two-thirds">
+
+        <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset">
+
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                    Set and unpublish date:
+                </legend>
+
+                <input type="hidden"
+                       asp-for="AnnouncementViewModel.DoNotUnPublish"
+                       value="@Model.AnnouncementViewModel.DoNotUnPublish" />
+
+                <div id="Unpublish-hint" class="govuk-hint">
+                    Select 'do not unpublish' if you wish to unpublish manually.
+                </div>
+
+                <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <button id="doNotUnpublished"
+                                class="govuk-radios__input"
+                                type="submit"
+                                asp-page="@LafPages.AnnouncementAdd.ROUTE"
+                                asp-page-handler="@LafPages.AnnouncementAdd.METHOD_DONOT_UNPUBLISH"></button>
+                        <label class="govuk-label govuk-radios__label @(Model.AnnouncementViewModel.DoNotUnPublish ? "makeMeDisplayAsRadioButton" : "")" for="doNotUnpublished">
+                            Do not unpublish
+                        </label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <button id="scheduleUnpublished"
+                                class="govuk-radios__input"
+                                type="submit"
+                                asp-page="@LafPages.AnnouncementAdd.ROUTE"
+                                asp-page-handler="@LafPages.AnnouncementAdd.METHOD_SCHEDULED_TO_UNPUBLISH"></button>
+                        <label class="govuk-label govuk-radios__label @(Model.AnnouncementViewModel.DoNotUnPublish ? "" : "makeMeDisplayAsRadioButton")" for="scheduleUnpublished">
+                            Schedule an unpublish date
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        @if (!Model.AnnouncementViewModel.DoNotUnPublish)
+        {
+            <div class="govuk-form-group @(Model.AnnouncementViewModel.UnPublishedDateError ? "govuk-form-group--error" : "")">
+                <label class="govuk-label govuk-label--s" for="AnnouncementViewModel_UnPublishedDate">
+                    Schedule unpublish (optional)
+                </label>
+
+                <div>
+                    @await Html.PartialAsync("Shared/_ThreePartDateNullable2", Model.ScheduledUnPublishedNullableControl)
+                </div>
+
+            </div>
+        }
+
+        <div class="govuk-button-group  govuk-!-static-margin-top-9">
+
+            @if (Model.Permissions.CanPublishAndContinue)
+            {
+                <button class="govuk-button" data-module="govuk-button"
+                        type="submit"
+                        asp-page-handler="@LafPages.AnnouncementAdd.METHOD_PUBLISH_AND_CONTINUE">
+                    Publish and continue
+                </button>
+            }
+
+            <a asp-page="@LafPages.Admin.ROUTE" class="govuk-link">Cancel</a>
+        </div>
+
+    </main>
+
+</form>

@@ -1,0 +1,315 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model Ofgem_Web_LAF_InternalPortal.Pages.Declarations.DeclarationDetailEditModel
+
+
+@if (Model.Declaration != null)
+{
+    <input type="hidden" asp-for="@Model.Declaration.Urn" />
+    <input type="hidden" asp-for="@Model.Declaration.DeclarationId" />
+    <input type="hidden" asp-for="@Model.Declaration.AddressLine1" />
+    <input type="hidden" asp-for="@Model.Declaration.AddressLine2" />
+    <input type="hidden" asp-for="@Model.Declaration.PostCode" />
+
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.LocalAuthority" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.ECO4orGreatBritishInsulationSchemeFlexReferralRoute" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.Route2Proxies" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.AdditionalRoute2Proxies" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.Route4ApplicationNumber" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.DateOfStatementOfIntentPublication" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.StatementOfIntentLink" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.StatementOfIntentPublishedFor" />
+    <input type="hidden" asp-for="@Model.DeclarationOriginal!.DateOfHouseholderEligibility" />
+
+    <style>
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        p, th, td {
+            white-space: normal !important;
+        }
+    </style>
+
+
+    @await Html.PartialAsync("_DeclarationDetailAddress", (Model.Declaration.AddressLine1, Model.Declaration.AddressLine2, Model.Declaration.PostCode, Model.DeclarationErrorFields))
+
+
+    <!-- Referral details section  -->
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table">
+                <caption class="govuk-table__caption govuk-table__caption--m">Referral details</caption>
+                <tbody class="govuk-table__body">
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="LARemitText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.ReferralMadeOutsideOfLAsRemit ?"govuk-form-group--error laf-table-error" :"")">Referral made outside of LA's remit</th>
+                        <td data-test-id="LARemitValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.Route)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.ReferralMadeOutsideOfLAsRemit)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.ReferralMadeOutsideOfLAsRemitErrorMessage
+                                </p>
+                            }
+
+                            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                                @foreach (var item in Model.Answers)
+                                {
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" type="radio" asp-for="@Model.Declaration.ReferralMadeOutsideOfLAsRemit" value="@item" />
+                                        <label class="govuk-label govuk-radios__label">
+                                            @item
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="ReferralRoutText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.Route ?"govuk-form-group--error laf-table-error" :"")">ECO4/GBIS Flex referral route</th>
+                        <td data-test-id="ReferralRoutValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.Route)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.RouteErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.RouteErrorMessage
+                                </p>
+                            }
+
+                            <select asp-for="@Model.Declaration.ECO4orGreatBritishInsulationSchemeFlexReferralRoute"
+                                    asp-items="@Model.DropdownChoices.ECO4orGreatBritishInsulationSchemeFlexReferralRoute_List"
+                                    class="govuk-select"></select>
+
+                            @if (Model.DeclarationErrorFields.Route)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.ECO4orGreatBritishInsulationSchemeFlexReferralRoute)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="Rout2ProxiesRoute3UmbrellaText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.Route2Proxies ?"govuk-form-group--error laf-table-error" :"")">Route 2 proxies</th>
+                        <td data-test-id="Rout2ProxiesRoute3UmbrellaValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.Route2Proxies)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.Route2ProxiesErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.Route2ProxiesErrorMessage
+                                </p>
+                            }
+
+                            <select asp-for="@Model.Declaration.Route2Proxies"
+                                    asp-items="@Model.DropdownChoices.Route2ProxiesRoute3UmbrellaConditions_List"
+                                    class="govuk-select">
+                            </select>
+
+                            @if (Model.DeclarationErrorFields.Route2Proxies)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.Route2Proxies)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="Rout2ProxiesText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.AdditionalRoute2Proxies ?"govuk-form-group--error laf-table-error" :"")">Additional route 2 proxies</th>
+                        <td data-test-id="Rout2ProxiesValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.AdditionalRoute2Proxies)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.AdditionalRoute2ProxiesErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.AdditionalRoute2ProxiesErrorMessage
+                                </p>
+                            }
+
+                            <select asp-for="@Model.Declaration.AdditionalRoute2Proxies"
+                                    asp-items="@Model.DropdownChoices.AdditionalRoute2Proxies_List"
+                                    class="govuk-select">
+                            </select>
+
+                            @if (Model.DeclarationErrorFields.AdditionalRoute2Proxies)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.AdditionalRoute2Proxies)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="Rout4ApplicationNumberText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.Route4ApplicationNumber ?"govuk-form-group--error laf-table-error" :"")">Route 4 application number</th>
+                        <td data-test-id="Rout4ApplicationNumberValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.Route4ApplicationNumber)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.Route4ApplicationNumberErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.Route4ApplicationNumberErrorMessage
+                                </p>
+                            }
+
+                            <input class="govuk-input" asp-for="@Model.Declaration.Route4ApplicationNumber" type="text" />
+
+                            @if (Model.DeclarationErrorFields.Route4ApplicationNumber)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.Route4ApplicationNumber)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="LAAreaCodeText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.LAAreaCode ?"govuk-form-group--error laf-table-error" :"")">LA area code</th>
+                        <td data-test-id="LAAreaCodeValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.LAAreaCode)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.LAAreaCodeErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.LAAreaCodeErrorMessage
+                                </p>
+                            }
+
+                            <input class="govuk-input" asp-for="@Model.Declaration.LAAreaCode" type="text">
+
+                            @if (Model.DeclarationErrorFields.LAAreaCode)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.LAAreaCode)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="DOHouseholderEligibilityText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.DateOfHouseholderEligibility ?"govuk-form-group--error laf-table-error" :"")">Date of householder eligibility</th>
+                        <td data-test-id="DOHouseholderEligibilityValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            <div>
+                                @await Html.PartialAsync("Shared/_ThreePartDate2", Model.DateOfHouseholderEligibilityControl)
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="LocalAuthorityText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.LocalAuthority ?"govuk-form-group--error laf-table-error" :"")">Local authority</th>
+                        <td data-test-id="LocalAuthorityValue" class="govuk-table__cell govuk-!-width-one-half">
+                            @Model.DeclarationOriginal!.LocalAuthority
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="WasLocalAuthorityConsultedText" scope="row"
+                            class="govuk-table__header govuk-!-width-one-half @(Model.DeclarationErrorFields.LAWasConsultedPriorToInstallationCompletion ?"govuk-form-group--error laf-table-error" :"")">Was local authority consulted prior to installation?</th>
+                        <td data-test-id="WasLocalAuthorityConsultedValue" class="govuk-table__cell  govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.LAWasConsultedPriorToInstallationCompletion)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.LAWasConsultedPriorToInstallationCompletionErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.LAWasConsultedPriorToInstallationCompletionErrorMessage
+                                </p>
+                            }
+
+                            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                                @foreach (var item in Model.Answers)
+                                {
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" type="radio" asp-for="@Model.Declaration.LAWasConsultedPriorToInstallationCompletion" value="@item" />
+                                        <label class="govuk-label govuk-radios__label">
+                                            @item
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="SoIPublicationDateText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.DateOfStatementOfIntentPublication ?"govuk-form-group--error laf-table-error" :"")">SoI publication date</th>
+                        <td data-test-id="SoIPublicationDateValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            <div>
+                                @await Html.PartialAsync("Shared/_ThreePartDate", Model.DateOfStatementOfIntentPublicationControl)
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="SoILinkText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.StatementOfIntentLink ?"govuk-form-group--error laf-table-error" :"")">SoI link</th>
+                        <td data-test-id="SoILinkValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.StatementOfIntentLink)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.StatementOfIntentLinkErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.StatementOfIntentLinkErrorMessage
+                                </p>
+                            }
+
+                            <input class="govuk-input" asp-for="@Model.Declaration.StatementOfIntentLink" type="text">
+
+                            @if (Model.DeclarationErrorFields.StatementOfIntentLink)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.StatementOfIntentLink)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                    <tr class="govuk-table__row">
+                        <th data-test-id="PublishedForText" scope="row"
+                            class="govuk-table__header  govuk-!-width-one-half @(Model.DeclarationErrorFields.StatementOfIntentPublishedFor ?"govuk-form-group--error laf-table-error" :"")">Published for</th>
+                        <td data-test-id="PublishedForValue" class="govuk-table__cell govuk-!-width-one-half">
+
+                            @if (Model.DeclarationErrorFields.StatementOfIntentPublishedFor)
+                            {
+                                <p id="@(@Model.DeclarationErrorFields.StatementOfIntentPublishedForErrorId)" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>@Model.DeclarationErrorFields.StatementOfIntentPublishedForErrorMessage
+                                </p>
+                            }
+
+                            <select asp-for="@Model.Declaration.StatementOfIntentPublishedFor"
+                                    asp-items="@Model.DropdownChoices.StatementOfIntentPublishedFor_List"
+                                    class="govuk-select">
+                            </select>
+
+                            @if (Model.DeclarationErrorFields.StatementOfIntentPublishedFor)
+                            {
+                                <div class="govuk-hint">
+                                    Original value '<span class="la-flex-error-bold"> @(Model.DeclarationOriginal?.StatementOfIntentPublishedFor)</span>'
+                                </div>
+                            }
+
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+}
